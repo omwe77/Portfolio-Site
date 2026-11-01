@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="800" height="640">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#faf8f5"/>
+      <stop offset="1" stop-color="#e8e4da"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="0.48" stop-color="#f59e0b"/>
+      <stop offset="0.51" stop-color="#b8eadb"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="640" fill="url(#bg)"/>
+  <rect x="320" y="140" width="160" height="160" rx="24" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.12)"/>
+  <rect x="390" y="60" width="180" height="240" rx="20" fill="url(#card)"/>
+  <rect x="200" y="300" width="400" height="140" rx="16" fill="rgba(250,248,245,0.7)" stroke="rgba(59,130,246,0.12)"/>
+  <rect x="220" y="320" width="360" height="20" rx="10" fill="url(#card)"/>
+  <rect x="230" y="355" width="340" height="12" rx="6" fill="rgba(59,130,246,0.3)"/>
+  <rect x="230" y="378" width="140" height="8" rx="4" fill="rgba(245,158,11,0.5)"/>
+  <rect x="230" y="400" width="270" height="8" rx="4" fill="rgba(184,234,219,0.3)"/>
+  <circle cx="480" cy="250" r="40" fill="rgba(59,130,246,0.2)" stroke="rgba(59,130,246,0.25)" stroke-dasharray="4 6"/>
+  <circle cx="520" cy="360" r="30" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.25)" stroke-dasharray="4 6"/>
+  <path d="M260 200 L320 160 L400 150" fill="none" stroke="rgba(245,158,11,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="400" y="530" text-anchor="middle" font-family="Inter, sans-serif" font-size="34" font-weight="600" fill="#1e293b">hamiGenZ</text>
+  <text x="400" y="575" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#475569">Python · FastAPI · Next.js</text>
+</svg>

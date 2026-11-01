@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://portfolio-gamma-coral-47.vercel.app/sitemap.xml
+Host: https://portfolio-gamma-coral-47.vercel.app
