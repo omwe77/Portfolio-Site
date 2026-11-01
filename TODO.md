@@ -31,5 +31,5 @@
 ## Release blockers / verification
 - [x] Rendered the local Work section at `127.0.0.1:3000/#work` and saved `outputs/portfolio-work-preview.png`; a fresh browser tab reported no runtime errors after the hero-canvas fix.
 - [x] JavaScript syntax, 28 unique IDs, all local fragments, exactly two case studies, placeholder removal, motion guards, and required image assets passed static checks; captured project screenshots match their source hashes.
-- [ ] Before any publication request, establish a verified Managed Git base. The selected `main` currently has no commits and all site files are untracked; do not assume a remote base or push.
-- [ ] No production publication was performed; the current handoff is a local preview for review.
+- [x] Created an isolated Git repository for this project and pushed the portfolio source to the public `omwe77/Portfolio-Site` repository; the parent home-directory Git repository was not used.
+- [ ] No production website deployment was performed; the canonical domain remains unassigned.
