@@ -17,4 +17,9 @@ Edit `public/index.html` to adjust Om’s profile, project copy, and links. The 
 
 The visitor-facing portrait is `public/portrait.jpg`. The photo chooser creates an optimized preview saved only in the current browser; replace the public portrait file itself to change the image everyone sees.
 
+## New sections
+
+- Education & research section (new): three case-study cards covering the BSc (Hons) Computing with Artificial Intelligence at Islington College, the hamiGenZ document intelligence research, and the Arena_Core deterministic simulation research.
+- AI & LLM skill groups: reorganized technical skills into three groups: AI & LLM, Platform & backend, and Frontend & tools.
+
 Use only Om’s supplied personal details and public links. Add canonical and absolute social-preview URLs only after the actual public domain has been assigned.
