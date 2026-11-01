@@ -276,6 +276,7 @@
   // ---- Init ----
   function init() {
     checkReducedMotion();
+    document.documentElement.classList.add('motion-ready');
     if (ctx) {
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
