@@ -2,6 +2,12 @@
 
 A motion-rich single-page portfolio with a custom interactive 3D network, scroll reveals, responsive project covers, and a reduced-motion option. The site is built with plain HTML, CSS, and JavaScript; it has no runtime dependencies.
 
+## Public deployment
+
+**Live website:** https://portfolio-gamma-coral-47.vercel.app
+
+The site is automatically deployed to Vercel from the `main` branch on GitHub. When you push changes, Vercel rebuilds and updates the production site within a few minutes.
+
 ## Run locally
 
 From this folder, run `node server.mjs`. The server binds to `127.0.0.1:3000` (or the port in the `PORT` environment variable) and serves the site's `public/` directory.
@@ -13,13 +19,29 @@ From this folder, run `node server.mjs`. The server binds to `127.0.0.1:3000` (o
 
 ## Personalize before launch
 
-Edit `public/index.html` to adjust Om’s profile, project copy, and links. The two case studies use the screenshot assets documented above. `public/styles.css` contains the visual system and responsive project-gallery styles; `public/main.js` contains the scroll, hover, navigation, photo, and 3D-canvas interactions. The `TODO.md` checklist records remaining release checks.
+Edit `public/index.html` to adjust Om's profile, project copy, and links. The two case studies use the screenshot assets documented above. `public/styles.css` contains the visual system and responsive project-gallery styles; `public/main.js` contains the scroll, hover, navigation, and 3D-canvas interactions. The `TODO.md` checklist records remaining release checks.
 
-The visitor-facing portrait is `public/portrait.jpg`. The photo chooser creates an optimized preview saved only in the current browser; replace the public portrait file itself to change the image everyone sees.
+The visitor-facing portrait is `public/portrait.jpg`. There is no photo uploader or browser-based portrait replacement; the site portrait is served directly from the `public/portrait.jpg` file.
 
-## New sections
+## Sections
 
-- Education & research section (new): three case-study cards covering the BSc (Hons) Computing with Artificial Intelligence at Islington College, the hamiGenZ document intelligence research, and the Arena_Core deterministic simulation research.
-- AI & LLM skill groups: reorganized technical skills into three groups: AI & LLM, Platform & backend, and Frontend & tools.
+- **Hero** — "Making AI useful." with an interactive orbital visualization and scroll progress bar
+- **Work** — Two case studies: hamiGenZ (document intelligence) and Arena_Core (sports simulation)
+- **About** — Personal introduction with location and open-to opportunities
+- **Skills** — Reorganized into three groups: AI & LLM, Platform & backend, Frontend & tools
+- **Education** — Three case-study cards covering the BSc (Hons) Computing with Artificial Intelligence at Islington College, hamiGenZ document intelligence research, and Arena_Core deterministic simulation research
 
-Use only Om’s supplied personal details and public links. Add canonical and absolute social-preview URLs only after the actual public domain has been assigned.
+## About Om
+
+Second-year BSc (Hons) Computing with Artificial Intelligence student at Islington College, affiliated with London Metropolitan University. Based in Kathmandu, Nepal. Interested in Generative AI, LLM engineering, document intelligence, AI agents, and reliable software systems. Open to remote, part-time, student-friendly internships and project collaborations. Paid opportunities are preferred.
+
+## Contact
+
+- **Email:** omdangol68@gmail.com
+- **LinkedIn:** https://www.linkedin.com/in/om-dangol-0a39243a7/
+- **GitHub:** https://github.com/omwe77
+- **Location:** Kathmandu, Nepal
+
+## Footer
+
+Practical software. Continuous learning.
