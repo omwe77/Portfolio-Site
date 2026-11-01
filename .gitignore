@@ -1,0 +1,5 @@
+.manus-webdev/
+node_modules/
+.env
+.env.*
+!.env.example
