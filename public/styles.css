@@ -156,38 +156,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--coral); outline
 .about-section { padding: clamp(95px, 13vw, 175px) 0; display: grid; grid-template-columns: 0.72fr 1.28fr; gap: 10vw; border-top: 1px solid var(--line); }
 .about-side { display: flex; flex-direction: column; align-items: flex-start; }
 .about-side .eyebrow { margin-bottom: 30px; }
-.portrait-block { width: min(100%, 310px); }
-.portrait-frame { position: relative; isolation: isolate; width: 100%; padding: 0; display: block; aspect-ratio: 0.84; overflow: hidden; border: 1px solid var(--line); border-radius: 46% 46% 3px 3px; background: linear-gradient(153deg, #d7e8df 0%, #bcc5eb 48%, #f4b08e 100%); cursor: pointer; transform: perspective(900px) rotateX(var(--portrait-x, 0deg)) rotateY(var(--portrait-y, 0deg)); transform-style: preserve-3d; transition: transform 420ms var(--ease-out), border-radius 500ms var(--ease-out), box-shadow 300ms ease; }
-.portrait-frame:hover, .portrait-frame:focus-visible { border-radius: 42% 42% 3px 3px; box-shadow: 0 22px 55px rgba(23,26,31,0.13); }
-.portrait-frame::before, .portrait-frame::after { position: absolute; z-index: 1; inset: 8%; border: 1px solid rgba(23,26,31,0.16); border-radius: 50% 50% 2px 2px; content: ''; pointer-events: none; transform: rotate(-7deg); }
-.portrait-frame::after { inset: 14% 3% 7%; border-color: rgba(255,255,255,0.62); transform: rotate(9deg); }
-.portrait-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 42%; transition: transform 680ms var(--ease-out), filter 420ms ease; }
-.portrait-frame:hover .portrait-image, .portrait-frame:focus-visible .portrait-image { transform: scale(1.045); filter: saturate(1.08); }
-.portrait-placeholder { position: absolute; z-index: 2; inset: 0; display: grid; align-content: center; justify-items: center; gap: 9px; color: var(--ink); }
-.portrait-placeholder[hidden], .portrait-image[hidden], .portrait-remove[hidden] { display: none !important; }
-.portrait-monogram { font-family: var(--serif); font-size: clamp(86px, 11vw, 136px); font-style: italic; letter-spacing: -0.12em; line-height: 1; transform: rotate(-9deg); }
-.portrait-prompt { padding: 6px 10px; border: 1px solid rgba(23,26,31,0.25); background: rgba(244,241,233,0.58); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
-.portrait-stamp, .portrait-corner { position: absolute; z-index: 3; display: grid; place-items: center; border: 1px solid rgba(23,26,31,0.34); background: var(--paper); color: var(--ink); }
-.portrait-stamp { top: 8%; left: -1%; min-height: 28px; padding: 0 9px; font-size: 8px; font-weight: 750; letter-spacing: 0.12em; transform: rotate(-6deg); }
-.portrait-corner { right: 8%; bottom: 9%; width: 36px; height: 36px; border-radius: 50%; color: var(--blue); font-size: 20px; transition: color 220ms ease, background-color 220ms ease, transform 260ms var(--ease-spring); }
-.portrait-frame:hover .portrait-corner, .portrait-frame:focus-visible .portrait-corner { color: white; background: var(--blue); transform: rotate(90deg); }
-.portrait-frame:focus-visible { outline-offset: 6px; }
-.portrait-controls { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
-.portrait-action { min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 11px; font-weight: 700; transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease; }
-.portrait-action:hover { color: white; background: var(--ink); border-color: var(--ink); }
-.portrait-action span { color: var(--coral); }
-.portrait-hint, .portrait-status { margin: 10px 0 0; color: var(--ink-soft); font-size: 11px; line-height: 1.55; }
-.portrait-status { min-height: 1.55em; color: #2f5c4b; }
-.about-location { margin: auto 0 0; padding-top: 32px; color: var(--ink-soft); font-size: 12px; line-height: 1.7; }
-.about-location strong { margin-top: 12px; display: block; color: var(--ink); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
-.about-location strong:first-child { margin-top: 0; }
-.about-main h2 { margin-bottom: 36px; }
-.about-lead { max-width: 670px; margin: 0; font-size: clamp(19px, 2.15vw, 29px); letter-spacing: -0.03em; line-height: 1.42; }
-.about-lead strong { font-weight: 650; }
-.about-copy { max-width: 570px; margin: 23px 0 29px; color: var(--ink-soft); font-size: 14px; line-height: 1.78; }
-.text-link-dark { border-bottom: 1px solid var(--line); padding-bottom: 7px; }
-
-.approach-section { position: relative; padding: clamp(90px, 12vw, 160px) 0; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 12vw; border-top: 1px solid var(--line); }
+border-top: 1px solid var(--line); }
 .approach-intro { position: sticky; top: calc(var(--header-height) + 60px); align-self: start; padding-top: 20px; }
 .approach-intro .eyebrow { margin-bottom: 29px; }
 .approach-intro h2 { font-size: clamp(46px, 6vw, 78px); }
@@ -363,7 +332,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--coral); outline
   .about-section { padding: 85px 0; grid-template-columns: 1fr; gap: 43px; }
   .about-side { display: flex; align-items: flex-start; }
   .about-side .eyebrow { margin: 0 0 22px; }
-  .portrait-block { width: min(100%, 300px); align-self: center; }
+  
   .about-location { margin: 0; padding: 20px 0 0; }
   .about-main h2 { margin-bottom: 27px; }
   .about-lead { font-size: 21px; }
@@ -442,7 +411,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--coral); outline
   .about-section { padding: 85px 0; grid-template-columns: 1fr; gap: 43px; }
   .about-side { display: flex; align-items: flex-start; }
   .about-side .eyebrow { margin: 0 0 22px; }
-  .portrait-block { width: min(100%, 300px); align-self: center; }
+  
   .about-location { margin: 0; padding: 20px 0 0; }
   .about-main h2 { margin-bottom: 27px; }
   .about-lead { font-size: 21px; }
@@ -472,7 +441,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--coral); outline
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .motion-ready .reveal { opacity: 1; transform: none; }
   .motion-ready .hero-copy > *, .motion-ready .hero-art { animation: none; }
-  .portrait-frame, .portrait-image { transform: none !important; }
+  
   .motion-ready .project-card .project-art::before { opacity: 0 !important; transform: scaleX(0) !important; transition: none !important; }
   .project-shot-image, body.motion-paused .project-shot-image { translate: 0 0 !important; transform: none !important; }
 }
