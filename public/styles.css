@@ -219,7 +219,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--coral); outline
 
 /* Contact section */
 .contact-section { position: relative; overflow: hidden; min-height: 480px; padding: clamp(64px, 9vw, 118px) clamp(34px, 8vw, 108px); display: grid; grid-template-columns: 1.25fr 0.75fr; align-items: end; gap: 7vw; color: var(--paper); background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 50%, #1e293b 100%); }
-.contact-copy, .contact-links { position: relative; z-index: 2; }
+.contact-copy { position: relative; z-index: 2; }
+.contact-links { position: static; z-index: 2; }
 .contact-section .eyebrow { color: #b9bcc4; }
 .contact-copy h2 { font-size: clamp(58px, 7.6vw, 102px); }
 .contact-copy > p:not(.eyebrow) { max-width: 440px; margin: 25px 0 28px; color: #c6c8d0; font-size: 14px; line-height: 1.6; }
