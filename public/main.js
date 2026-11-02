@@ -23,21 +23,61 @@
   // ---- Reduced-motion state ----
   let motionPaused = false;
   let motionSupports = false;
+  let reducedMotion = false;
+
+  // ---- Animation control state (idempotent scheduler) ----
+  // Invariants:
+  // - No more than one active animation frame chain.
+  // - Repeated calls to start must not create additional chains.
+  // - Stop must cancel the pending frame.
+  // - Pause must stop scheduling frames (loop notices and stops rescheduling).
+  // - Resume must start exactly one frame chain.
+  // - Reduced-motion preference must be respected on initialisation and when changed.
+  // - Resizing must not create additional frame loops.
+  // - No orphaned requestAnimationFrame callbacks.
+  let animFrame = null;
+  let lastTime = 0;
+  let animationRunning = false; // is the rAF loop active?
+  let animationPaused = false;   // is the animation logically paused?
 
   function checkReducedMotion() {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     motionSupports = true;
-    if (mq.matches) {
+    reducedMotion = mq.matches;
+    if (reducedMotion) {
       motionPaused = true;
+      animationPaused = true;
+      animationRunning = false;
       setBodyMotionPaused(true);
+      if (animFrame) {
+        cancelAnimationFrame(animFrame);
+        animFrame = null;
+      }
     }
-    mq.addEventListener('change', () => {
-      if (mq.matches) {
+    // Listen for changes while the page is open
+    mq.addEventListener('change', (e) => {
+      reducedMotion = e.matches;
+      if (reducedMotion) {
         motionPaused = true;
+        animationPaused = true;
+        animationRunning = false;
         setBodyMotionPaused(true);
+        if (animFrame) {
+          cancelAnimationFrame(animFrame);
+          animFrame = null;
+        }
       } else {
+        // Reduced motion preference restored — resume animation if not paused
         motionPaused = false;
         setBodyMotionPaused(false);
+        animationPaused = false;
+        if (animationRunning) {
+          // Loop is already running and will notice animationPaused=false on next tick
+        } else {
+          // Start a fresh chain
+          animationRunning = true;
+          animFrame = requestAnimationFrame(animationLoop);
+        }
       }
     });
   }
@@ -50,7 +90,85 @@
     }
   }
 
+  // ---- The single animation loop ----
+  // Reschedules itself only if animationRunning && !animationPaused.
+  // Guarantee: at most one chain exists because the loop only ever calls
+  // requestAnimationFrame(animationLoop) itself.
+  function animationLoop(t) {
+    const dt = t - lastTime;
+    lastTime = t;
+
+    if (dt > 30) {
+      drawOrbital(t);
+    }
+
+    // Only reschedule if running and not paused — this is the idempotent guard.
+    if (animationRunning && !animationPaused) {
+      animFrame = requestAnimationFrame(animationLoop);
+    } else if (!animationRunning) {
+      // Cleanup if stop() cleared the flag while a frame was pending.
+      animFrame = null;
+    }
+  }
+
+  // ---- startAnimation / stopAnimation ----
+
+  function startAnimation() {
+    if (reducedMotion) return;
+    animationRunning = true;
+    animationPaused = false;
+    // Idempotent: start a chain only if one doesn't already exist.
+    if (!animFrame) {
+      animFrame = requestAnimationFrame(animationLoop);
+    }
+    setBodyMotionPaused(false);
+    if (motionToggle) {
+      motionToggle.setAttribute('aria-label', 'Pause motion');
+    }
+  }
+
+  function stopAnimation() {
+    animationRunning = false;
+    animationPaused = true;
+    if (animFrame) {
+      cancelAnimationFrame(animFrame);
+      animFrame = null;
+    }
+    setBodyMotionPaused(true);
+    if (motionToggle) {
+      motionToggle.setAttribute('aria-label', 'Resume motion');
+    }
+  }
+
+  // ---- toggleMotion ----
+  // Toggles between running and paused. No-op when reduced-motion is preferred.
+  function toggleMotion() {
+    if (reducedMotion) return;
+
+    if (animationPaused) {
+      // Resume from paused
+      animationPaused = false;
+      if (!animationRunning) {
+        animationRunning = true;
+        animFrame = requestAnimationFrame(animationLoop);
+      }
+      setBodyMotionPaused(false);
+      if (motionToggle) {
+        motionToggle.setAttribute('aria-label', 'Pause motion');
+      }
+    } else {
+      // Pause — stop everything. Resume will start a fresh chain.
+      animationPaused = true;
+      animationRunning = false;
+      setBodyMotionPaused(true);
+      if (motionToggle) {
+        motionToggle.setAttribute('aria-label', 'Resume motion');
+      }
+    }
+  }
+
   // ---- Orbital canvas ----
+
   function resizeCanvas() {
     if (!canvas) return;
     const rect = orbitalStage.getBoundingClientRect();
@@ -94,12 +212,13 @@
     ctx.stroke();
     ctx.restore();
 
-    // Orbit markers (blue + coral dots)
+    // Orbit markers (blue + coral dots) - rotate slowly based on time
+    const rotation = time * 0.001; // slow rotation driven by time
     const markers = [
-      { x: cx + baseR * 0.92 * Math.cos(0), y: cy + baseR * 0.92 * Math.sin(0), color: '#3b82f6' },
-      { x: cx + baseR * 0.92 * Math.cos(Math.PI * 0.5), y: cy + baseR * 0.92 * Math.sin(Math.PI * 0.5), color: '#f59e0b' },
-      { x: cx + baseR * 0.92 * Math.cos(Math.PI), y: cy + baseR * 0.92 * Math.sin(Math.PI), color: '#3b82f6' },
-      { x: cx + baseR * 0.92 * Math.cos(Math.PI * 1.5), y: cy + baseR * 0.92 * Math.sin(Math.PI * 1.5), color: '#f59e0b' },
+      { x: cx + baseR * 0.92 * Math.cos(rotation), y: cy + baseR * 0.92 * Math.sin(rotation), color: '#3b82f6' },
+      { x: cx + baseR * 0.92 * Math.cos(Math.PI * 0.5 + rotation), y: cy + baseR * 0.92 * Math.sin(Math.PI * 0.5 + rotation), color: '#f59e0b' },
+      { x: cx + baseR * 0.92 * Math.cos(Math.PI + rotation), y: cy + baseR * 0.92 * Math.sin(Math.PI + rotation), color: '#3b82f6' },
+      { x: cx + baseR * 0.92 * Math.cos(Math.PI * 1.5 + rotation), y: cy + baseR * 0.92 * Math.sin(Math.PI * 1.5 + rotation), color: '#f59e0b' },
     ];
     markers.forEach((m) => {
       ctx.beginPath();
@@ -113,10 +232,10 @@
 
     // Connecting lines
     const lines = [
-      { a: 0, b: Math.PI * 0.5, color: 'rgba(59, 130, 246, 0.15)' },
-      { a: Math.PI * 0.5, b: Math.PI, color: 'rgba(245, 158, 11, 0.15)' },
-      { a: Math.PI, b: Math.PI * 1.5, color: 'rgba(59, 130, 246, 0.15)' },
-      { a: Math.PI * 1.5, b: Math.PI * 2, color: 'rgba(245, 158, 11, 0.15)' },
+      { a: rotation, b: Math.PI * 0.5 + rotation, color: 'rgba(59, 130, 246, 0.15)' },
+      { a: Math.PI * 0.5 + rotation, b: Math.PI + rotation, color: 'rgba(245, 158, 11, 0.15)' },
+      { a: Math.PI + rotation, b: Math.PI * 1.5 + rotation, color: 'rgba(59, 130, 246, 0.15)' },
+      { a: Math.PI * 1.5 + rotation, b: Math.PI * 2 + rotation, color: 'rgba(245, 158, 11, 0.15)' },
     ];
     lines.forEach((l) => {
       const x1 = cx + baseR * 0.92 * Math.cos(l.a);
@@ -145,7 +264,7 @@
 
     // Orbit lines from sphere to edge
     for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2;
+      const angle = (i / 12) * Math.PI * 2 + rotation;
       const x = cx + baseR * 0.92 * Math.cos(angle);
       const y = cy + baseR * 0.92 * Math.sin(angle);
       const grad2 = ctx.createRadialGradient(x, y, 0, x, y, 4);
@@ -155,59 +274,6 @@
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fillStyle = grad2;
       ctx.fill();
-    }
-  }
-
-  let animFrame = null;
-  let lastTime = 0;
-
-  function animate(time) {
-    if (!animFrame) {
-      animFrame = requestAnimationFrame(function loop(t) {
-        animate(t);
-      });
-    }
-    const dt = time - lastTime;
-    lastTime = time;
-    if (dt > 30) {
-      drawOrbital(time);
-    }
-    animFrame = requestAnimationFrame(function loop(t) {
-      animate(t);
-    });
-  }
-
-  function startAnimation() {
-    if (!animFrame) {
-      lastTime = 0;
-      animate(0);
-    }
-  }
-
-  function stopAnimation() {
-    if (animFrame) {
-      cancelAnimationFrame(animFrame);
-      animFrame = null;
-    }
-  }
-
-  function toggleMotion() {
-    if (motionSupports) {
-      motionPaused = !motionPaused;
-      setBodyMotionPaused(motionPaused);
-      motionToggle.setAttribute('aria-label', motionPaused ? 'Resume motion' : 'Pause motion');
-      const icon = motionToggle.querySelector('svg');
-      if (motionPaused) {
-        const c = icon.querySelector('circle');
-        c.setAttribute('stroke-dasharray', '20 10');
-        const p = icon.querySelector('path');
-        p.setAttribute('opacity', '1');
-      } else {
-        const c = icon.querySelector('circle');
-        c.setAttribute('stroke-dasharray', '24 10');
-        const p = icon.querySelector('path');
-        p.setAttribute('opacity', '0');
-      }
     }
   }
 
@@ -253,7 +319,7 @@
     observer.observe(section);
   }
 
-  // ---- Scroll reveal ----
+  // ---- Reveal init ----
   function initReveal() {
     const revealElements = document.querySelectorAll('.project-card, .education-card, .skill-category, .approach-step');
     if (revealElements.length === 0) return;
@@ -280,7 +346,10 @@
     if (ctx) {
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
-      startAnimation();
+      // Start animation if not in reduced motion
+      if (!reducedMotion) {
+        startAnimation();
+      }
     }
     if (motionToggle) {
       motionToggle.addEventListener('click', toggleMotion);
@@ -295,4 +364,4 @@
   } else {
     init();
   }
-})();
+})();
