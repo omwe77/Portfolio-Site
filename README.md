@@ -20,6 +20,13 @@ From this folder, run `node server.mjs`. The server binds to `127.0.0.1:3000`
 (or the port in the `PORT` environment variable) and serves the site's
 `public/` directory.
 
+## Responsive UI and motion
+
+- The sticky header keeps the full section navigation on wider screens and switches to a keyboard-operable mobile disclosure menu on smaller screens. The menu closes on Escape, outside click, or choosing a destination.
+- The hero keeps its editorial two-column desktop composition and stacks cleanly on narrow screens, with the five core skills presented as a semantic list.
+- A slim scroll-progress indicator tracks reading position. The project screenshots use a short, one-time reveal, while the orbital canvas has an explicit pause/resume control.
+- The page honors the operating system's reduced-motion preference and provides visible, accessible motion-control feedback. The site remains plain HTML, CSS, and JavaScript with no added runtime dependencies.
+
 ## Featured project evidence
 
 - **hamiGenZ:** [live demo](https://hamegenz.vercel.app/) · [source code](https://github.com/omwe77/hamiGenZ). `public/hami-evidence-workspace-live.png` is a genuine screenshot of the online example workspace and its cited sample notice.

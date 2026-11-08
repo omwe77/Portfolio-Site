@@ -54,6 +54,7 @@
         animFrame = null;
       }
     }
+    syncMotionToggle();
     // Listen for changes while the page is open
     mq.addEventListener('change', (e) => {
       reducedMotion = e.matches;
@@ -66,6 +67,7 @@
           cancelAnimationFrame(animFrame);
           animFrame = null;
         }
+        syncMotionToggle();
       } else {
         // Reduced motion preference restored — resume animation if not paused
         motionPaused = false;
@@ -78,6 +80,7 @@
           animationRunning = true;
           animFrame = requestAnimationFrame(animationLoop);
         }
+        syncMotionToggle();
       }
     });
   }
@@ -88,6 +91,15 @@
     } else {
       document.body.classList.remove('motion-paused');
     }
+  }
+
+  function syncMotionToggle() {
+    if (!motionToggle) return;
+    const label = reducedMotion ? 'Motion reduced by system preference' : (animationPaused ? 'Resume motion' : 'Pause motion');
+    motionToggle.disabled = reducedMotion;
+    motionToggle.setAttribute('aria-label', label);
+    const visibleLabel = motionToggle.querySelector('span');
+    if (visibleLabel) visibleLabel.textContent = reducedMotion ? 'Motion reduced' : (animationPaused ? 'Resume motion' : 'Pause motion');
   }
 
   // ---- The single animation loop ----
@@ -122,9 +134,7 @@
       animFrame = requestAnimationFrame(animationLoop);
     }
     setBodyMotionPaused(false);
-    if (motionToggle) {
-      motionToggle.setAttribute('aria-label', 'Pause motion');
-    }
+    syncMotionToggle();
   }
 
   function stopAnimation() {
@@ -135,36 +145,15 @@
       animFrame = null;
     }
     setBodyMotionPaused(true);
-    if (motionToggle) {
-      motionToggle.setAttribute('aria-label', 'Resume motion');
-    }
+    syncMotionToggle();
   }
 
   // ---- toggleMotion ----
   // Toggles between running and paused. No-op when reduced-motion is preferred.
   function toggleMotion() {
     if (reducedMotion) return;
-
-    if (animationPaused) {
-      // Resume from paused
-      animationPaused = false;
-      if (!animationRunning) {
-        animationRunning = true;
-        animFrame = requestAnimationFrame(animationLoop);
-      }
-      setBodyMotionPaused(false);
-      if (motionToggle) {
-        motionToggle.setAttribute('aria-label', 'Pause motion');
-      }
-    } else {
-      // Pause — stop everything. Resume will start a fresh chain.
-      animationPaused = true;
-      animationRunning = false;
-      setBodyMotionPaused(true);
-      if (motionToggle) {
-        motionToggle.setAttribute('aria-label', 'Resume motion');
-      }
-    }
+    if (animationPaused) startAnimation();
+    else stopAnimation();
   }
 
   // ---- Orbital canvas ----
@@ -279,6 +268,7 @@
 
   // ---- Scroll progress ----
   function updateScrollProgress() {
+    if (!progressBar) return;
     const scrollTop = window.scrollY;
     const doc = document.documentElement;
     const scrollHeight = doc.scrollHeight - doc.clientHeight;
@@ -286,18 +276,38 @@
     progressBar.style.transform = 'scaleX(' + Math.min(progress, 1) + ')';
   }
 
+  function initScrollProgress() {
+    if (!progressBar) return;
+    updateScrollProgress();
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+    window.addEventListener('resize', updateScrollProgress, { passive: true });
+    window.addEventListener('load', updateScrollProgress, { once: true });
+  }
+
   // ---- Mobile menu ----
   function initMobileMenu() {
     const toggle = menuToggle;
+    if (!toggle || !siteNav) return;
+
+    function closeMenu() {
+      siteNav.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open navigation');
+    }
+
     toggle.addEventListener('click', function () {
       const isOpen = siteNav.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', isOpen);
+      toggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+    });
+    siteNav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', closeMenu);
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && siteNav.classList.contains('is-open')) {
-        siteNav.classList.remove('is-open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
+      if (e.key === 'Escape' && siteNav.classList.contains('is-open')) closeMenu();
+    });
+    document.addEventListener('click', function (e) {
+      if (siteNav.classList.contains('is-open') && !siteNav.contains(e.target) && !toggle.contains(e.target)) closeMenu();
     });
   }
 
@@ -321,13 +331,13 @@
 
   // ---- Reveal init ----
   function initReveal() {
-    const revealElements = document.querySelectorAll('.project-card, .education-card, .skill-category, .approach-step');
-    if (revealElements.length === 0) return;
+    const revealElements = document.querySelectorAll('.project-card');
+    if (revealElements.length === 0 || !('IntersectionObserver' in window)) return;
 
     const observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('reveal', 'is-visible');
+          entry.target.classList.add('is-visible');
           observer.unobserve(entry.target);
         }
       });
@@ -343,6 +353,7 @@
   function init() {
     checkReducedMotion();
     document.documentElement.classList.add('motion-ready');
+    initScrollProgress();
     if (ctx) {
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
@@ -364,4 +375,4 @@
   } else {
     init();
   }
-})();
+})();
