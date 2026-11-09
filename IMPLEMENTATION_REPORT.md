@@ -4,7 +4,7 @@
 
 **PARTIAL — ready for production code review; not approved for release.** The confirmed canonical origin is `https://portfolio-gamma-coral-47.vercel.app/`. Production and preview outputs, all six case-study routes, browser regressions at four widths, and static SEO/deployment checks pass. No deployment, merge, production-setting change, or `main` modification was performed.
 
-Release follow-ups: verify the LinkedIn profile by manual click-through (automated requests are blocked by LinkedIn), confirm the Vercel project root directory in its dashboard, and review/approve the changes before any merge or deployment. The requested feature-branch push is still pending final git review and commit.
+Release follow-ups: verify the LinkedIn profile by manual click-through (automated requests are blocked by LinkedIn), confirm the Vercel project root directory in its dashboard, and review/approve the changes before any merge or deployment.
 
 - Project: `C:\Users\LENOVO\OneDrive - London Metropolitan University\Documents\my_projects\Portfolio-Site-v2`
 - Branch: `rebuild/immersive-reference`
@@ -117,6 +117,6 @@ Commands are listed in execution order; temporary exploratory failures are inclu
 
 `vercel.json` explicitly declares `npm ci --ignore-scripts`, `npm run build`, `dist`, Node `22.x` through `package.json`, trailing slash behavior, and `PUBLIC_ORIGIN=https://portfolio-gamma-coral-47.vercel.app`. Vercel’s system `VERCEL_ENV` controls production vs preview output. Preview pages are noindex and do not publish the production sitemap in `robots.txt`.
 
-The domain is confirmed by the user and is no longer a blocker. The Vercel project root directory was not inspected because production settings are out of scope; confirm it points to the repository root before release. LinkedIn profile identity is not independently verified. No Vercel CLI deploy, dashboard setting change, merge, push, or production modification has occurred at report authoring time.
+The domain is confirmed by the user and is no longer a blocker. The Vercel project root directory was not inspected because production settings are out of scope; confirm it points to the repository root before release. LinkedIn profile identity is not independently verified. No Vercel CLI deploy, dashboard setting change, merge, or production modification was performed. The requested feature-branch push is pending.
 
-**Git release details:** commit SHA and feature-branch remote URL are pending final review/commit/push; no change will be made to `main`.
+**Git release details:** hardening commit `3f00e40` (`Harden Portfolio V2 release configuration`) is on `rebuild/immersive-reference`. Remote branch: `https://github.com/omwe77/Portfolio-Site/tree/rebuild/immersive-reference`. The report update will be committed separately. No change will be made to `main`.
