@@ -1,80 +1,53 @@
-# Om's Portfolio
+# Om Dangol — Portfolio V2
 
-A motion-rich single-page portfolio redesigned with a warm ivory/cream editorial
-system — deep navy and ink typography, electric blue / coral / mint accents, a
-Playfair Display serif heading system, a custom interactive 3D orbital network
-in the hero, and a dark navy footer. Built with plain HTML, CSS, and
-JavaScript; no runtime dependencies.
+A responsive portfolio with project filters, six individual case-study routes, keyboard-accessible navigation, reduced-motion support, and a client-side email draft form. The site uses HTML, CSS, JavaScript, and a small Node.js build/preview server. It has no application runtime dependencies.
 
-## Public deployment
+## Production origin
 
-**Live website:** https://portfolio-gamma-coral-47.vercel.app
-
-The site is automatically deployed to Vercel from the `main` branch on GitHub.
-When you push changes, Vercel rebuilds and updates the production site within a
-few minutes.
+The confirmed production origin is `https://portfolio-gamma-coral-47.vercel.app/`. `PUBLIC_ORIGIN` is the source used by the build for canonical links, Open Graph URLs and images, the sitemap, and `robots.txt`. The value is defined in `vercel.json` for Vercel builds and must be set explicitly for local builds.
 
 ## Run locally
 
-From this folder, run `node server.mjs`. The server binds to `127.0.0.1:3000`
-(or the port in the `PORT` environment variable) and serves the site's
-`public/` directory.
+Use Node.js 22.x, as specified in `package.json`:
 
-## Responsive UI and motion
-
-- The sticky header keeps the full section navigation on wider screens and switches to a keyboard-operable mobile disclosure menu on smaller screens. The menu closes on Escape, outside click, or choosing a destination.
-- The hero keeps its editorial two-column desktop composition and stacks cleanly on narrow screens, with the five core skills presented as a semantic list.
-- A slim scroll-progress indicator tracks reading position. The project screenshots use a short, one-time reveal, while the orbital canvas has an explicit pause/resume control.
-- The page honors the operating system's reduced-motion preference and provides visible, accessible motion-control feedback. The site remains plain HTML, CSS, and JavaScript with no added runtime dependencies.
-
-## Featured project evidence
-
-- **hamiGenZ:** [live demo](https://hamegenz.vercel.app/) · [source code](https://github.com/omwe77/hamiGenZ). `public/hami-evidence-workspace-live.png` is a genuine screenshot of the online example workspace and its cited sample notice.
-- **Arena_Core:** [live demo](https://lemon-ocean-06aede400.5.azurestaticapps.net/) · [source code](https://github.com/omwe77/Arena_Core). `public/arena-core-home-live.png` and `public/arena-core-world-cup-live.png` are genuine screenshots of the public application and FIFA World Cup 2026 simulator.
-
-## Quick start
-
-The fastest way to get the site running locally:
-
-```bash
-node server.mjs
+```powershell
+$env:PUBLIC_ORIGIN = 'http://127.0.0.1:3000'
+npm ci
+npm run dev
 ```
 
-Open http://127.0.0.1:3000 in your browser. The server serves `public/` and
-supports SPA routing for all internal anchors.
+Open `http://127.0.0.1:3000`. The development server renders the six `/projects/{slug}/` pages from `templates/case-study.html`. That template is outside the publicly served `public/` directory.
 
-## Personalize before launch
+## Build and preview
 
-Edit `public/index.html` to adjust Om's profile, project copy, and links. The
-orbital canvas, reduced-motion control, and scroll progress are in
-`public/main.js`; the full visual system (typography, colours, glass effects,
-responsive grids) is in `public/styles.css`. The two case studies use the
-screenshot assets in `public/portfolio/`.
+```powershell
+$env:PUBLIC_ORIGIN = 'https://portfolio-gamma-coral-47.vercel.app'
+npm ci
+npm run build
+npm run preview
+```
 
-## Design system
+The build output is `dist/`. It contains the homepage, assets, sitemap, robots file, 404 page, and six generated case-study routes. It does not contain the unrendered template. Vercel uses the build command, install command, Node version, output directory, confirmed `PUBLIC_ORIGIN`, and trailing-slash handling in `vercel.json`.
 
-The redesign follows the approved visual reference:
+Vercel preview builds receive `noindex, nofollow` metadata. Their `robots.txt` omits the sitemap so crawlers can read the page metadata without being directed to preview URLs. Builds running in CI/Vercel fail closed if `VERCEL_ENV` is unavailable.
 
-- **Background:** warm ivory / cream (`#faf8f5`) for page content.
-- **Typography:** Playfair Display (serif) for headings, Inter (sans-serif) for
-  body text.
-- **Accents:** electric blue (`#3b82f6`), restrained coral (`#f59e0b`), mint
-  (`#b8eadb`).
-- **Hero:** greeting + large serif "Om Dangol" treatment, skill/category badges,
-  dual CTA ("Explore My Work" / "Get in Touch"), and the animated orbital
-  network canvas.
-- **Sections:** Featured Work, Approach (3-step), Education, Skills, and a dark
-  navy contact/footer section.
-- **Decor:** restrained glass-morphism effects, soft gradients, subtle shadows,
-  rounded cards, and a paused/playing motion control.
+## Project routes
 
-## Contact
+- `/projects/hamigenz/`
+- `/projects/arena/`
+- `/projects/subscription/`
+- `/projects/ecomart/`
+- `/projects/medstore/`
+- `/projects/spam/`
 
-- **Email:** omdangol68@gmail.com
-- **LinkedIn:** https://www.linkedin.com/in/om-dangol-0a39243a7/
-- **GitHub:** https://github.com/omwe77
-- **Location:** Kathmandu, Nepal
+Case-study copy is maintained in `case-studies.js`; the private HTML template is `templates/case-study.html`. Genuine portrait and verified hamiGenZ/Arena_Core screenshots are in `public/`.
 
-## Footer
+## Contact and profile links
 
-Practical software. Continuous learning.
+The contact form creates an email draft using `mailto:` and opens the visitor's email application. It does not send messages to a server. The footer links to GitHub and the LinkedIn profile URL carried in the earlier project README: `https://www.linkedin.com/in/om-dangol-0a39243a7/`. LinkedIn limits automated HTTP checks, so the profile destination still needs a manual click-through check.
+
+## Regression suite
+
+`tests/portfolio_regression.py` runs with Python Playwright and a local Chromium install. It covers the four required viewport widths, filters and project routes, canonical/OG/sitemap/robots output, private-template 404, navigation/menu ARIA state, contact form, reduced motion, images, overflow, keyboard focus, and runtime errors. Set `EXPECT_PREVIEW=1` when testing a preview build.
+
+The site does not include a contact backend. A future backend form would need an API endpoint, provider credentials stored as server secrets, server validation, spam/rate controls, privacy and retention rules, and delivery monitoring.
