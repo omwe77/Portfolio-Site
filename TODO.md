@@ -1,35 +1,26 @@
-# Om’s portfolio — implementation status
+# Portfolio V2 — Release Checklist
 
-## Implemented
-- [x] Built the animated hero with Om’s name, editable positioning copy, and a primary call to action.
-- [x] Built the About section with editable biography and profile fields.
-- [x] Built exactly two factual featured case studies with genuine project screenshots, supplied technology/role details, and separate live-demo/source links.
-- [x] Built the skills and capabilities section with editable content fields.
-- [x] Implemented scroll reveals, a progress indicator, a sticky process moment, subtle parallax, and smooth anchor navigation.
-- [x] Implemented a custom responsive 3D network sculpture that reacts to pointer movement and scroll position.
-- [x] Implemented hover and micro-interactions for navigation, buttons, project cards, and skill tags.
-- [x] Implemented responsive navigation, keyboard-operable links, visible focus styles, and reduced-motion support.
-- [x] Added page description, keywords, and Open Graph/Twitter title and description in the initial HTML.
-- [x] Prepared the static local server to serve the site's `public/` directory.
+## Completed in this release-hardening pass
 
-## Current request
-- [x] Added section-aware navigation, staggered project reveals, step-progress animation, and hover/focus treatments while respecting reduced motion.
-- [x] Integrated the supplied portrait as `public/portrait.jpg`, with interactive pointer tilt and an optimized browser-local replacement/restore/remove flow.
-- [x] Replaced profile, education, approach, capabilities, availability, and contact placeholders with Om’s supplied details.
-- [x] Replaced the three project placeholders with exactly two real case studies and their supplied live-demo/source links.
-- [x] Added byte-identical screenshots captured from the hamiGenZ cited-example workspace and Arena_Core's live home and World Cup simulator.
-- [x] Disclosed that hamiGenZ’s public deployment uses predefined responses; the live AI backend requires local configuration.
-- [x] Omitted the disputed exact competition count; the notes say approximately 13 while the live Arena_Core homepage says 15+.
-- [x] Confirmed the local page renders in the connected browser at the home section; static checks found two project cards and no generic bracketed copy placeholders.
-- [x] Added a left-to-right blue/coral signal wipe only to the two evidence frames as they enter view.
-- [x] Added at most 7px of scroll-linked image drift in the existing animation frame; disabled it for narrow/touch contexts, reduced motion, and the pause control.
-- [x] Preserved static fallback content, added no dependencies, made decorative cues one-shot, and kept the accessibility motion paths intact.
+- [x] Move the case-study template to `templates/case-study.html`, outside `public/`.
+- [x] Build all six shareable project routes into `dist/`; keep `/case-study.html` unavailable.
+- [x] Add deterministic Vercel install/build/output settings, lockfile, and Node 22.x requirement.
+- [x] Use the confirmed `PUBLIC_ORIGIN=https://portfolio-gamma-coral-47.vercel.app` for canonical, Open Graph, sitemap, and robots output.
+- [x] Mark Vercel preview HTML `noindex, nofollow`; preview robots output omits the production sitemap.
+- [x] Correct project card/filter microtype and door-card contrast without changing the V2 composition.
+- [x] Synchronize mobile menu `aria-expanded` and `aria-label` when toggled, dismissed with Escape, or closed by a navigation link.
+- [x] Add XML and plain-text MIME mappings to the local server.
+- [x] Replace obsolete site documentation with V2 architecture, build, test, contact, and deployment guidance.
 
-## Remaining before public launch
-- [ ] Confirm the canonical public domain; then set and verify the absolute canonical and social-preview URLs.
+## Remaining before production release
 
-## Release blockers / verification
-- [x] Rendered the local Work section at `127.0.0.1:3000/#work` and saved `outputs/portfolio-work-preview.png`; a fresh browser tab reported no runtime errors after the hero-canvas fix.
-- [x] JavaScript syntax, 28 unique IDs, all local fragments, exactly two case studies, placeholder removal, motion guards, and required image assets passed static checks; captured project screenshots match their source hashes.
-- [x] Created an isolated Git repository for this project and pushed the portfolio source to the public `omwe77/Portfolio-Site` repository; the parent home-directory Git repository was not used.
-- [ ] No production website deployment was performed; the canonical domain remains unassigned.
+- [ ] Manually open the LinkedIn profile link. The full profile URL was taken from the prior README; automated LinkedIn requests returned HTTP 999, so account identity was not independently verified.
+- [ ] Review the final implementation report, browser screenshots, and remaining accessibility heuristic warnings.
+- [ ] Confirm the Vercel project uses the repository root as its root directory. No production settings were inspected or changed.
+- [ ] Obtain release approval before merging or deploying.
+
+## Known product limits
+
+- The contact form uses `mailto:` and has no server-side email delivery.
+- hamiGenZ has no independent accuracy or user benchmark; Arena_Core is a simulation; subscription token counts are approximate; EcoMart is a non-transactional prototype; Spam Email Classifier has no benchmark evaluation; MedStore uses local file persistence.
+- No production deployment was performed in this task.

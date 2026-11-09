@@ -2,10 +2,15 @@ import http from 'node:http';
 import path from 'node:path';
 import { readFile, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { renderCaseStudy } from './case-studies.js';
+import { applyPreviewNoindex, getPublicOrigin, isPreviewBuild, renderOrigin } from './site-config.js';
 
-const publicRoot = path.resolve(fileURLToPath(new URL('./public/', import.meta.url)));
+const publicRoot = path.resolve(process.env.PUBLIC_DIR ?? fileURLToPath(new URL('./public/', import.meta.url)));
 const port = Number(process.env.PORT ?? 3000);
 const host = '127.0.0.1';
+const publicOrigin = getPublicOrigin();
+const previewBuild = isPreviewBuild();
+const caseStudyTemplate = await readFile(fileURLToPath(new URL('./templates/case-study.html', import.meta.url)), 'utf8');
 const mimeTypes = new Map([
   ['.html', 'text/html; charset=utf-8'],
   ['.css', 'text/css; charset=utf-8'],
@@ -15,6 +20,8 @@ const mimeTypes = new Map([
   ['.png', 'image/png'],
   ['.jpg', 'image/jpeg'],
   ['.jpeg', 'image/jpeg'],
+  ['.xml', 'application/xml; charset=utf-8'],
+  ['.txt', 'text/plain; charset=utf-8'],
   ['.webp', 'image/webp'],
   ['.ico', 'image/x-icon']
 ]);
@@ -30,22 +37,42 @@ const server = http.createServer(async (request, response) => {
     const requestUrl = new URL(request.url ?? '/', `http://${host}:${port}`);
     const decodedPath = decodeURIComponent(requestUrl.pathname);
     let filePath = path.resolve(publicRoot, `.${decodedPath}`);
+    const projectMatch = decodedPath.match(/^\/projects\/(hamigenz|arena|subscription|ecomart|medstore|spam)\/?$/);
+    let content;
+    if (projectMatch) {
+      content = Buffer.from(renderCaseStudy(caseStudyTemplate, projectMatch[1], publicOrigin));
+    } else {
+      if (filePath !== publicRoot && !filePath.startsWith(publicRoot + path.sep)) {
+        response.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+        response.end('Forbidden');
+        return;
+      }
 
-    if (filePath !== publicRoot && !filePath.startsWith(publicRoot + path.sep)) {
-      response.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
-      response.end('Forbidden');
-      return;
+      let info = await stat(filePath);
+      if (info.isDirectory()) {
+        filePath = path.join(filePath, 'index.html');
+        info = await stat(filePath);
+      }
+      if (!info.isFile()) throw new Error('Not a file');
+
+      content = await readFile(filePath);
+      const basename = path.basename(filePath);
+      if (basename === 'robots.txt' && previewBuild) {
+        content = Buffer.from('User-agent: *\nAllow: /\n');
+      } else if (basename === 'index.html' || basename === 'sitemap.xml' || basename === 'robots.txt') {
+        content = Buffer.from(renderOrigin(content.toString(), publicOrigin));
+      }
+      if (basename === 'index.html') {
+        content = Buffer.from(content.toString().replace('</body>', '<script src="/qa.js" defer></script></body>'));
+      }
     }
 
-    let info = await stat(filePath);
-    if (info.isDirectory()) {
-      filePath = path.join(filePath, 'index.html');
-      info = await stat(filePath);
+    if (projectMatch || path.extname(filePath).toLowerCase() === '.html') {
+      content = Buffer.from(applyPreviewNoindex(content.toString(), previewBuild));
     }
-    if (!info.isFile()) throw new Error('Not a file');
-
-    const content = await readFile(filePath);
-    const contentType = mimeTypes.get(path.extname(filePath).toLowerCase()) ?? 'application/octet-stream';
+    const contentType = projectMatch
+      ? mimeTypes.get('.html')
+      : mimeTypes.get(path.extname(filePath).toLowerCase()) ?? 'application/octet-stream';
     response.writeHead(200, {
       'Content-Type': contentType,
       'Content-Length': content.length,

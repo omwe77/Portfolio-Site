@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "dev": "node server.mjs"
+    "dev": "node server.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/preview.mjs"
   }
 }
