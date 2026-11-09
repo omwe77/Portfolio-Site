@@ -123,6 +123,8 @@ Commands are listed in execution order; temporary exploratory failures are inclu
 | `gh api repos/omwe77/Portfolio-Site/commits/13ed169d0f56a447dbe6fabb157b27e8df90cf7b/status` | PASS; Vercel context state `success`, description `Deployment has completed`, deployment detail URL recorded above. |
 | `gh api .../commits/{sha}/deployments` exploratory lookup | Returned HTTP 422 because this is not the GitHub deployments endpoint; it did not create or alter a deployment. The Vercel commit status above is the deployment evidence. |
 | Production `tests/portfolio_regression.py https://portfolio-gamma-coral-47.vercel.app/` | PASS; 318 passed, 0 failed, including all six routes, images, navigation, theme, and zero console/runtime errors. |
+| `gh api repos/omwe77/Portfolio-Site/commits/343d674/status` | PASS; follow-up report/screenshot commit also received Vercel state `success`, description `Deployment has completed`. |
+| Production URL `curl.exe` smoke checks after `343d674` deployment (homepage, six project routes, three image assets) | PASS; all ten URLs returned HTTP 200. |
 
 ## Deployment configuration and blockers
 
@@ -141,7 +143,9 @@ The user confirmed Vercel Root Directory is `./` before merge. `vercel.json` is 
 - Static output after merge: PASS, 40 passed, 0 failed.
 - Live Playwright smoke test against the production URL: **PASS, 318 passed, 0 failed**. All six routes return HTTP 200 and render the required case-study sections; homepage and route canonicals/OG metadata, all three images, category filters, navigation and menu ARIA, theme switching, responsive behavior at 1440/1024/390/360, keyboard focus, reduced motion, and zero browser console/runtime errors passed.
 - The production test refreshed the full-page captures in `reports/screenshots/v2-1440.png`, `v2-1024.png`, `v2-390.png`, and `v2-360.png`; the 1440 and 360 images changed from the previous local captures.
+- After the report/screenshot commit `343d6742157a2d51ec419f6b2194c02a438e3ad1` was pushed, Vercel also reported `success` / `Deployment has completed` for that commit, with detail target `https://vercel.com/omwe77/portfolio/8rCW7kN1Za13gpyPnK6eBoimjhYG` (2026-11-09 14:12:37 UTC).
+- Final HTTP smoke checks after that latest deployment returned **200** for the homepage, all six project routes, the portrait, and both project screenshots. The 318-check browser suite was run against the code deployment commit `13ed169…`; `343d674…` only changed this report and the two refreshed screenshots.
 
 The Vercel deployment status above is from the GitHub Vercel commit check; no Vercel dashboard settings were changed. LinkedIn profile identity remains unverified because automated LinkedIn requests are blocked.
 
-**Git release details:** feature branch `rebuild/immersive-reference` remains on origin at `bab6a608c1ddc06160f449f35e30445483ff1f61`. Production `main` is at `13ed169d0f56a447dbe6fabb157b27e8df90cf7b`.
+**Git release details:** feature branch `rebuild/immersive-reference` remains on origin at `bab6a608c1ddc06160f449f35e30445483ff1f61`. Production replacement merge commit: `13ed169d0f56a447dbe6fabb157b27e8df90cf7b`. Follow-up report and screenshot commit: `343d6742157a2d51ec419f6b2194c02a438e3ad1`.
