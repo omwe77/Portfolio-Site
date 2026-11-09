@@ -2,9 +2,9 @@
 
 ## Final assessment
 
-**PARTIAL — ready for production code review; not approved for release.** The confirmed canonical origin is `https://portfolio-gamma-coral-47.vercel.app/`. Production and preview outputs, all six case-study routes, browser regressions at four widths, and static SEO/deployment checks pass. No deployment, merge, production-setting change, or `main` modification was performed.
+**PASS — Portfolio V2 replaced the production code on `main` and is serving at the confirmed production origin.** The normal merge, push, Vercel deployment check, production URL, and 318-check live browser regression all passed. No repository, history, Vercel project, or local backup was deleted.
 
-Release follow-ups: verify the LinkedIn profile by manual click-through (automated requests are blocked by LinkedIn), confirm the Vercel project root directory in its dashboard, and review/approve the changes before any merge or deployment.
+Remaining follow-up: verify the LinkedIn profile by manual click-through (automated requests are blocked by LinkedIn). Vercel Root Directory was manually confirmed as `./` before merge.
 
 - Project: `C:\Users\LENOVO\OneDrive - London Metropolitan University\Documents\my_projects\Portfolio-Site-v2`
 - Branch: `rebuild/immersive-reference`
@@ -114,11 +114,34 @@ Commands are listed in execution order; temporary exploratory failures are inclu
 | `git status --short`, `git diff --stat`, `git branch --show-current`, `git remote -v` | PASS; confirmed branch `rebuild/immersive-reference`, origin `https://github.com/omwe77/Portfolio-Site.git`, and preserved all dirty V2 files for the release commit. |
 | `git push origin rebuild/immersive-reference` (sandbox attempt) | BLOCKED; sandbox could not connect to GitHub port 443. |
 | `git push origin rebuild/immersive-reference` (approved network retry) | PASS; pushed new remote feature branch only. GitHub returned the feature-branch pull-request URL. |
+| `git fetch origin` (first sandbox attempt, then approved retry) | First attempt: blocked by sandbox networking. Approved retry: PASS; fetched current main and feature refs with no new main commits. |
+| `git switch main` | PASS; local `main` matched `origin/main` at `2c1bd42f61843884fd08e4db84ee73070b41739c`. |
+| `git merge --no-ff rebuild/immersive-reference -m "Merge Portfolio V2 production replacement"` | PASS; normal ort merge, no conflicts. Created production merge commit `13ed169d0f56a447dbe6fabb157b27e8df90cf7b`. |
+| `npm run build` after merge with production `PUBLIC_ORIGIN` and `VERCEL_ENV` | PASS; generated the homepage and all six static case-study routes. |
+| `tests/deployment_output.py production` after merge | PASS; 40 passed, 0 failed. |
+| `git push origin main` | PASS; origin/main advanced from `2c1bd42` to `13ed169`, no force push. |
+| `gh api repos/omwe77/Portfolio-Site/commits/13ed169d0f56a447dbe6fabb157b27e8df90cf7b/status` | PASS; Vercel context state `success`, description `Deployment has completed`, deployment detail URL recorded above. |
+| `gh api .../commits/{sha}/deployments` exploratory lookup | Returned HTTP 422 because this is not the GitHub deployments endpoint; it did not create or alter a deployment. The Vercel commit status above is the deployment evidence. |
+| Production `tests/portfolio_regression.py https://portfolio-gamma-coral-47.vercel.app/` | PASS; 318 passed, 0 failed, including all six routes, images, navigation, theme, and zero console/runtime errors. |
 
 ## Deployment configuration and blockers
 
 `vercel.json` explicitly declares `npm ci --ignore-scripts`, `npm run build`, `dist`, Node `22.x` through `package.json`, trailing slash behavior, and `PUBLIC_ORIGIN=https://portfolio-gamma-coral-47.vercel.app`. Vercel’s system `VERCEL_ENV` controls production vs preview output. Preview pages are noindex and do not publish the production sitemap in `robots.txt`.
 
-The domain is confirmed by the user and is no longer a blocker. The Vercel project root directory was not inspected because production settings are out of scope; confirm it points to the repository root before release. LinkedIn profile identity is not independently verified. No Vercel CLI deploy, dashboard setting change, merge, or production modification was performed. The feature branch was pushed as requested; an existing GitHub-to-Vercel integration may create a preview automatically, and all preview pages are marked noindex.
+The user confirmed Vercel Root Directory is `./` before merge. `vercel.json` is at that repository root and sets `npm run build`, output directory `dist`, Node `22.x` through `package.json`, and the confirmed `PUBLIC_ORIGIN`.
 
-**Git release details:** hardening commit `3f00e40` (`Harden Portfolio V2 release configuration`) and report commit `83823cb` (`Record Portfolio V2 release audit evidence`) are on `rebuild/immersive-reference`. The branch was pushed to `https://github.com/omwe77/Portfolio-Site/tree/rebuild/immersive-reference`. No change was made to `main`.
+## Production replacement and live verification
+
+- Feature commit merged: `bab6a608c1ddc06160f449f35e30445483ff1f61`.
+- Production merge commit on `main`: `13ed169d0f56a447dbe6fabb157b27e8df90cf7b` (`Merge Portfolio V2 production replacement`). It has parents `2c1bd42f61843884fd08e4db84ee73070b41739c` and `bab6a608c1ddc06160f449f35e30445483ff1f61`.
+- Push: PASS, `main` updated from `2c1bd42` to `13ed169`; no force push.
+- Production URL: https://portfolio-gamma-coral-47.vercel.app/
+- Vercel status: **PASS — Ready/completed**. GitHub commit status for `13ed169…` has context `Vercel`, state `success`, description `Deployment has completed`, and target `https://vercel.com/omwe77/portfolio/EZjfe2EYXa1tmxgGQvGZ4VVUARS6` (recorded 2026-11-09 13:52:02 UTC).
+- Build after merge: PASS. `npm run build` generated the homepage and six case-study routes.
+- Static output after merge: PASS, 40 passed, 0 failed.
+- Live Playwright smoke test against the production URL: **PASS, 318 passed, 0 failed**. All six routes return HTTP 200 and render the required case-study sections; homepage and route canonicals/OG metadata, all three images, category filters, navigation and menu ARIA, theme switching, responsive behavior at 1440/1024/390/360, keyboard focus, reduced motion, and zero browser console/runtime errors passed.
+- The production test refreshed the full-page captures in `reports/screenshots/v2-1440.png`, `v2-1024.png`, `v2-390.png`, and `v2-360.png`; the 1440 and 360 images changed from the previous local captures.
+
+The Vercel deployment status above is from the GitHub Vercel commit check; no Vercel dashboard settings were changed. LinkedIn profile identity remains unverified because automated LinkedIn requests are blocked.
+
+**Git release details:** feature branch `rebuild/immersive-reference` remains on origin at `bab6a608c1ddc06160f449f35e30445483ff1f61`. Production `main` is at `13ed169d0f56a447dbe6fabb157b27e8df90cf7b`.
