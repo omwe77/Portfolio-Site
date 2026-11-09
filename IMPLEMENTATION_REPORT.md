@@ -112,11 +112,13 @@ Commands are listed in execution order; temporary exploratory failures are inclu
 | Final `tests/deployment_output.py production` against restored `dist` | PASS; 40 passed, 0 failed. |
 | `git diff --check` | PASS; no whitespace errors. Git emitted LF-to-CRLF working-copy notices for README, TODO, homepage, robots, sitemap, and the Python test. |
 | `git status --short`, `git diff --stat`, `git branch --show-current`, `git remote -v` | PASS; confirmed branch `rebuild/immersive-reference`, origin `https://github.com/omwe77/Portfolio-Site.git`, and preserved all dirty V2 files for the release commit. |
+| `git push origin rebuild/immersive-reference` (sandbox attempt) | BLOCKED; sandbox could not connect to GitHub port 443. |
+| `git push origin rebuild/immersive-reference` (approved network retry) | PASS; pushed new remote feature branch only. GitHub returned the feature-branch pull-request URL. |
 
 ## Deployment configuration and blockers
 
 `vercel.json` explicitly declares `npm ci --ignore-scripts`, `npm run build`, `dist`, Node `22.x` through `package.json`, trailing slash behavior, and `PUBLIC_ORIGIN=https://portfolio-gamma-coral-47.vercel.app`. Vercel’s system `VERCEL_ENV` controls production vs preview output. Preview pages are noindex and do not publish the production sitemap in `robots.txt`.
 
-The domain is confirmed by the user and is no longer a blocker. The Vercel project root directory was not inspected because production settings are out of scope; confirm it points to the repository root before release. LinkedIn profile identity is not independently verified. No Vercel CLI deploy, dashboard setting change, merge, or production modification was performed. The requested feature-branch push is pending.
+The domain is confirmed by the user and is no longer a blocker. The Vercel project root directory was not inspected because production settings are out of scope; confirm it points to the repository root before release. LinkedIn profile identity is not independently verified. No Vercel CLI deploy, dashboard setting change, merge, or production modification was performed. The feature branch was pushed as requested; an existing GitHub-to-Vercel integration may create a preview automatically, and all preview pages are marked noindex.
 
-**Git release details:** hardening commit `3f00e40` (`Harden Portfolio V2 release configuration`) is on `rebuild/immersive-reference`. Remote branch: `https://github.com/omwe77/Portfolio-Site/tree/rebuild/immersive-reference`. The report update will be committed separately. No change will be made to `main`.
+**Git release details:** hardening commit `3f00e40` (`Harden Portfolio V2 release configuration`) and report commit `83823cb` (`Record Portfolio V2 release audit evidence`) are on `rebuild/immersive-reference`. The branch was pushed to `https://github.com/omwe77/Portfolio-Site/tree/rebuild/immersive-reference`. No change was made to `main`.
