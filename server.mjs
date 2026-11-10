@@ -62,9 +62,6 @@ const server = http.createServer(async (request, response) => {
       } else if (basename === 'index.html' || basename === 'sitemap.xml' || basename === 'robots.txt') {
         content = Buffer.from(renderOrigin(content.toString(), publicOrigin));
       }
-      if (basename === 'index.html') {
-        content = Buffer.from(content.toString().replace('</body>', '<script src="/qa.js" defer></script></body>'));
-      }
     }
 
     if (projectMatch || path.extname(filePath).toLowerCase() === '.html') {

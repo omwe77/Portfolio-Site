@@ -23,6 +23,10 @@ pages += [(slug, DIST / "projects" / slug / "index.html", f"{PUBLIC_ORIGIN}/proj
 for name, path, canonical in pages:
     html = path.read_text(encoding="utf-8") if path.exists() else ""
     check(f"{name} generated", bool(html))
+    if name == "homepage":
+        check("dialog has its case-study link in static markup", 'id="case-route"' in html)
+        check("no injected runtime helper scripts are deployed", not (DIST / "qa.js").exists() and not (DIST / "site.js").exists() and "/site.js" not in html)
+        check("unused legacy assets are absent and current portrait is present", all(not (DIST / asset).exists() for asset in ("portrait.jpg", "arena-core-world-cup-live.png", "portfolio/hamiGenZ.svg")) and (DIST / "portrait-workspace.jpg").is_file())
     check(f"{name} canonical and og:url use PUBLIC_ORIGIN", f'<link rel="canonical" href="{canonical}">' in html and f'<meta property="og:url" content="{canonical}">' in html)
     check(f"{name} Open Graph image is absolute", f'<meta property="og:image" content="{PUBLIC_ORIGIN}/og-image.svg">' in html)
     check(f"{name} has no unresolved template tokens", "{{PUBLIC_ORIGIN}}" not in html and "{{canonical}}" not in html and "{{ogImage}}" not in html)

@@ -2,13 +2,17 @@
 import pathlib
 import os
 import sys
+import tempfile
 import xml.etree.ElementTree as ET
 from playwright.sync_api import sync_playwright
 
 BASE_URL = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:3000"
 PUBLIC_ORIGIN = os.environ["PUBLIC_ORIGIN"].rstrip("/")
 EXPECT_PREVIEW = os.environ.get("EXPECT_PREVIEW") == "1"
-SCREENSHOTS = pathlib.Path("reports/ui-audit/after/regression")
+SCREENSHOTS = pathlib.Path(os.environ.get(
+    "PORTFOLIO_SCREENSHOT_DIR",
+    pathlib.Path(tempfile.gettempdir()) / "portfolio-v2-regression",
+))
 results = []
 console_errors = []
 page_errors = []

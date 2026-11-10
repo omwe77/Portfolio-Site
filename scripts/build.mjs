@@ -12,8 +12,7 @@ await rm(output, { recursive: true, force: true });
 await cp(publicRoot, output, { recursive: true });
 
 const homePath = path.join(output, 'index.html');
-const home = applyPreviewNoindex(renderOrigin(await readFile(homePath, 'utf8'), publicOrigin)
-  .replace('</body>', '<script src="/qa.js" defer></script></body>'), previewBuild);
+const home = applyPreviewNoindex(renderOrigin(await readFile(homePath, 'utf8'), publicOrigin), previewBuild);
 await writeFile(homePath, home);
 
 const sitemapPath = path.join(output, 'sitemap.xml');

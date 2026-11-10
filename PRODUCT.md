@@ -20,14 +20,15 @@ A personal portfolio grounded in real student work, with project-specific links 
 
 ## Operating Context
 
-Visitors browse a responsive single-page site, filter projects by area, open project details, and can contact Om through verified links.
+Visitors browse a responsive single-page site, filter projects by discipline, open project details and dedicated case-study routes, and contact Om through an addressed Gmail draft or email link.
 
 ## Capabilities and Constraints
 
-- Static Node-served site with no production deployment during this task.
-- Preserve genuine portrait and verified hamiGenZ/Arena_Core screenshots.
-- Preserve accurate biography, project links, email, GitHub, LinkedIn, and useful SEO files.
-- The supplied PORTFOLIO_V2_MASTER.html is the approved V2 interaction and composition reference.
+- Static HTML/CSS/JavaScript portfolio built by the repository's dependency-free Node.js tooling and deployed from `main` through the existing Vercel project at `https://portfolio-gamma-coral-47.vercel.app/`.
+- Vercel builds from the repository root and serves `dist/`.
+- Six individual project routes are generated from `case-studies.js` and `templates/case-study.html`.
+- Preserve Om's supplied portrait at `public/portrait-workspace.jpg`, the project screenshots used by the homepage, accurate biography, and verified project links.
+- The Email Om link opens a Gmail compose draft. The portfolio has no contact backend and does not send email.
 
 ## Brand Commitments
 
@@ -35,11 +36,11 @@ Use the Om Dangol name and an honest, curious, practical voice; avoid invented e
 
 ## Evidence on Hand
 
-- `public/portrait.jpg`
+- `public/portrait-workspace.jpg`
 - `public/hami-evidence-workspace-live.png`
 - `public/arena-core-home-live.png`
-- `public/arena-core-world-cup-live.png`
-- Verified project links and factual copy in the existing site and supplied V2 master.
+- Project-specific screenshots embedded in the homepage.
+- Verified project links and factual copy in the current site and case studies.
 
 ## Product Principles
 

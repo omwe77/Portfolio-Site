@@ -1,8 +1,6 @@
 .manus-webdev/
 node_modules/
-.env
-.env.*
-!.env.example
-.vercel
 dist/
+.vercel/
 .env*
+!.env.example

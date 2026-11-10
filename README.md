@@ -1,37 +1,42 @@
-# Om Dangol — Portfolio V2
+# Om Dangol — Portfolio
 
-A responsive portfolio with project filters, six individual case-study routes, keyboard-accessible navigation, reduced-motion support, and a client-side email draft form. The site uses HTML, CSS, JavaScript, and a small Node.js build/preview server. It has no application runtime dependencies.
+Responsive personal portfolio for Om Dangol, a Computing with Artificial Intelligence student. It presents six projects, individual case-study pages, education, skills, and contact links.
 
-## Production origin
+**Live site:** [portfolio-gamma-coral-47.vercel.app](https://portfolio-gamma-coral-47.vercel.app/)
 
-The confirmed production origin is `https://portfolio-gamma-coral-47.vercel.app/`. `PUBLIC_ORIGIN` is the source used by the build for canonical links, Open Graph URLs and images, the sitemap, and `robots.txt`. The value is defined in `vercel.json` for Vercel builds and must be set explicitly for local builds.
+## Stack and structure
+
+- Static HTML, CSS, and JavaScript; no application runtime dependencies.
+- Node.js 22.x build and local preview server.
+- `public/index.html` contains the homepage, interactions, project dialog links, and declarative image loading hints.
+- `case-studies.js` holds case-study content; `templates/case-study.html` is a private build template outside the public directory.
+- `scripts/build.mjs` writes the homepage, assets, SEO files, 404 page, and six project routes to `dist/`.
+- Vercel builds from the repository root (`./`) and publishes `dist/`, as configured in `vercel.json`.
 
 ## Run locally
 
-Use Node.js 22.x, as specified in `package.json`:
-
-```powershell
-$env:PUBLIC_ORIGIN = 'http://127.0.0.1:3000'
-npm ci
-npm run dev
-```
-
-Open `http://127.0.0.1:3000`. The development server renders the six `/projects/{slug}/` pages from `templates/case-study.html`. That template is outside the publicly served `public/` directory.
-
-## Build and preview
+Install Node.js 22.x, then run:
 
 ```powershell
 $env:PUBLIC_ORIGIN = 'https://portfolio-gamma-coral-47.vercel.app'
-npm ci
-npm run build
-npm run preview
+npm.cmd ci
+npm.cmd run dev
 ```
 
-The build output is `dist/`. It contains the homepage, assets, sitemap, robots file, 404 page, and six generated case-study routes. It does not contain the unrendered template. Vercel uses the build command, install command, Node version, output directory, confirmed `PUBLIC_ORIGIN`, and trailing-slash handling in `vercel.json`.
+Open `http://127.0.0.1:3000`. The local server renders the six project routes from the private template.
 
-Vercel preview builds receive `noindex, nofollow` metadata. Their `robots.txt` omits the sitemap so crawlers can read the page metadata without being directed to preview URLs. Builds running in CI/Vercel fail closed if `VERCEL_ENV` is unavailable.
+To build and preview the production output, use a second terminal:
 
-## Project routes
+```powershell
+$env:PUBLIC_ORIGIN = 'https://portfolio-gamma-coral-47.vercel.app'
+npm.cmd run build
+$env:PORT = '3001'
+npm.cmd run preview
+```
+
+Open `http://127.0.0.1:3001`. `PUBLIC_ORIGIN` is required by all builds. Vercel sets the confirmed production origin in `vercel.json`; preview deployments receive `noindex, nofollow` metadata and do not publish a sitemap URL in `robots.txt`.
+
+## Project pages
 
 - `/projects/hamigenz/`
 - `/projects/arena/`
@@ -40,14 +45,40 @@ Vercel preview builds receive `noindex, nofollow` metadata. Their `robots.txt` o
 - `/projects/medstore/`
 - `/projects/spam/`
 
-Case-study copy is maintained in `case-studies.js`; the private HTML template is `templates/case-study.html`. Genuine portrait and verified hamiGenZ/Arena_Core screenshots are in `public/`.
+Homepage category filters, project dialogs, theme switching, mobile navigation, and motion preferences are implemented in the existing page. Each project page has a canonical URL and links to its recorded repository; Arena_Core and hamiGenZ also link to their recorded demos.
 
-## Contact and profile links
+## Contact behavior
 
-The contact form creates an email draft using `mailto:` and opens the visitor's email application. It does not send messages to a server. The footer links to GitHub and the LinkedIn profile URL carried in the earlier project README: `https://www.linkedin.com/in/om-dangol-0a39243a7/`. LinkedIn limits automated HTTP checks, so the profile destination still needs a manual click-through check.
+**Email Om** opens an addressed compose draft in Gmail. The visitor chooses whether to send it. The contact section also provides a `mailto:` address for other email applications. There is no contact form or server-side email delivery.
 
-## Regression suite
+Om's public profile links are [GitHub](https://github.com/omwe77) and [LinkedIn](https://www.linkedin.com/in/om-dangol-0a39243a7/). The LinkedIn URL is present on the site, but its account identity still needs manual confirmation.
 
-`tests/portfolio_regression.py` runs with Python Playwright and a local Chromium install. It covers the four required viewport widths, filters and project routes, canonical/OG/sitemap/robots output, private-template 404, navigation/menu ARIA state, contact form, reduced motion, images, overflow, keyboard focus, and runtime errors. Set `EXPECT_PREVIEW=1` when testing a preview build.
+## Verification
 
-The site does not include a contact backend. A future backend form would need an API endpoint, provider credentials stored as server secrets, server validation, spam/rate controls, privacy and retention rules, and delivery monitoring.
+The Python regression suite uses Playwright and Chromium. Install its test-only tools with:
+
+```powershell
+python -m pip install playwright
+python -m playwright install chromium
+```
+
+Start the local server as described above, then run in another terminal:
+
+```powershell
+$env:PUBLIC_ORIGIN = 'https://portfolio-gamma-coral-47.vercel.app'
+python tests/portfolio_regression.py
+python tests/deployment_output.py
+```
+
+To run the browser suite against another server, pass its URL, for example `python tests/portfolio_regression.py https://portfolio-gamma-coral-47.vercel.app`. To check preview metadata, build in preview mode and inspect it:
+
+```powershell
+$env:PUBLIC_ORIGIN = 'https://portfolio-gamma-coral-47.vercel.app'
+$env:VERCEL_ENV = 'preview'
+npm.cmd run build
+python tests/deployment_output.py preview
+```
+
+Screenshots go to the system temporary directory by default; set `PORTFOLIO_SCREENSHOT_DIR` to choose another destination.
+
+The GitHub `main` branch is connected to the existing Vercel project. Pushing a verified commit to `main` triggers the production deployment; feature branches create previews.
