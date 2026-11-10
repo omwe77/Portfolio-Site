@@ -34,31 +34,35 @@ html{scroll-padding-top:96px}body{font:16px/1.7 Manrope,Arial,sans-serif;letter-
 #explore .door{min-width:0;width:100%;padding:0;text-align:left;color:var(--ink)}
 #explore .door--docs{--door-accent:#dd9872}#explore .door--web{--door-accent:#9fc9b2}#explore .door--systems{--door-accent:#d4bd8b}#explore .door--learning{--door-accent:#aab9d5}
 body.light #explore .door--docs{--door-accent:#9d4d32}body.light #explore .door--web{--door-accent:#39715c}body.light #explore .door--systems{--door-accent:#775c22}body.light #explore .door--learning{--door-accent:#455f87}
-#explore .door-in{height:auto!important;min-height:282px;display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:17px 17px 15px;border:1px solid color-mix(in srgb,var(--door-accent) 30%,var(--line))!important;border-radius:3px!important;background:color-mix(in srgb,var(--panel) 94%,var(--door-accent))!important;background-image:none!important;position:relative;isolation:isolate;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+#explore .door-in{height:auto!important;min-height:282px;display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:17px 17px 15px;border:1px solid color-mix(in srgb,var(--door-accent) 30%,var(--line))!important;border-radius:3px!important;background:color-mix(in srgb,var(--panel) 94%,var(--door-accent))!important;background-image:none!important;position:relative;isolation:isolate;transition:transform .24s cubic-bezier(.16,1,.3,1),border-color .22s ease,background-color .22s ease,box-shadow .24s ease}
 #explore .door-in::after{content:none}
 #explore .door-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 #explore .door-code{font:700 12px/1.2 Manrope,Arial,sans-serif;letter-spacing:.08em;color:var(--door-accent)}
 #explore .door-count{font:600 12px/1.2 Manrope,Arial,sans-serif;color:var(--muted);white-space:nowrap}
 #explore .door-art{display:grid;place-items:center;min-height:112px;color:var(--door-accent)}
-#explore .door-art svg{width:min(100%,190px);height:112px;overflow:visible}
+#explore .door-art svg{width:min(100%,190px);height:112px;overflow:visible;transition:transform .34s cubic-bezier(.16,1,.3,1)}
 #explore .door-art .quiet{stroke:var(--ink);stroke-width:1.5;opacity:.35}
-#explore .door-art .trace{stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.24;transition:opacity .18s ease}
-#explore .door-art .point{fill:currentColor;opacity:0;transform:scale(.55);transform-origin:center;transition:opacity .18s ease,transform .24s cubic-bezier(.16,1,.3,1)}
+#explore .door-art .trace{stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;opacity:.28;transition:stroke-dashoffset .42s cubic-bezier(.16,1,.3,1),opacity .2s ease}
+#explore .door-art .point{fill:currentColor;opacity:0;transform:scale(.45);transform-origin:center;transition:opacity .16s ease .22s,transform .22s cubic-bezier(.16,1,.3,1) .22s}
 #explore .door-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
-#explore .door strong{display:block;max-width:17ch;font:600 21px/1.13 Newsreader,Georgia,serif;letter-spacing:-.025em;text-wrap:balance;color:var(--ink)}
-#explore .door-arrow{flex:0 0 22px;width:22px;height:22px;color:var(--muted);stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s cubic-bezier(.16,1,.3,1)}
-#explore .door:hover .door-in,#explore .door:focus-visible .door-in{transform:translateY(-4px);border-color:var(--door-accent)!important;background:color-mix(in srgb,var(--panel) 88%,var(--door-accent))!important}
-#explore .door:hover .trace,#explore .door:focus-visible .trace,#explore .door[aria-pressed="true"] .trace{opacity:1}
-#explore .door:hover .point,#explore .door:focus-visible .point,#explore .door[aria-pressed="true"] .point{opacity:1;transform:scale(1)}
-#explore .door:hover .door-arrow,#explore .door:focus-visible .door-arrow,#explore .door[aria-pressed="true"] .door-arrow{transform:translateX(3px);color:var(--door-accent)}
+#explore .door strong{display:block;max-width:17ch;font:600 21px/1.13 Newsreader,Georgia,serif;letter-spacing:-.025em;text-wrap:balance;color:var(--ink);transition:color .18s ease,transform .22s cubic-bezier(.16,1,.3,1)}
+#explore .door-arrow{flex:0 0 22px;width:22px;height:22px;color:var(--muted);stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .22s cubic-bezier(.16,1,.3,1),color .18s ease}
+#explore .door:focus-visible .trace,#explore .door[aria-pressed="true"] .trace{stroke-dashoffset:0;opacity:1}
+#explore .door:focus-visible .point,#explore .door[aria-pressed="true"] .point{opacity:1;transform:scale(1)}
+#explore .door:focus-visible .door-in{transform:translateY(-3px);border-color:var(--door-accent)!important;background:color-mix(in srgb,var(--panel) 88%,var(--door-accent))!important}
+#explore .door:focus-visible .door-art svg,#explore .door[aria-pressed="true"] .door-art svg{transform:scale(1.025)}
+#explore .door:focus-visible strong,#explore .door[aria-pressed="true"] strong{color:var(--door-accent)}
+#explore .door:focus-visible .door-arrow,#explore .door[aria-pressed="true"] .door-arrow{transform:translateX(4px);color:var(--door-accent)}
 #explore .door[aria-pressed="true"] .door-in{border-color:var(--door-accent)!important;background:color-mix(in srgb,var(--panel) 85%,var(--door-accent))!important}
+#explore .door[aria-pressed="true"] .door-code{color:var(--door-accent)}
+@media(hover:hover) and (pointer:fine){#explore .door:hover .door-in{transform:translateY(-5px);border-color:var(--door-accent)!important;background:color-mix(in srgb,var(--panel) 88%,var(--door-accent))!important;box-shadow:0 12px 24px rgba(0,0,0,.22)}#explore .door:hover .trace{stroke-dashoffset:0;opacity:1}#explore .door:hover .point{opacity:1;transform:scale(1)}#explore .door:hover .door-art svg{transform:scale(1.035)}#explore .door:hover strong{color:var(--door-accent);transform:translateY(-1px)}#explore .door:hover .door-arrow{transform:translateX(5px);color:var(--door-accent)}}
 #explore .door:focus-visible{outline:2px solid var(--door-accent);outline-offset:4px}
-#explore .door:active .door-in{transform:translateY(-1px) scale(.99)}
+#explore .door:active .door-in{transform:scale(.985)}
 @media(max-width:1050px){#explore .doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}#explore .door-in{min-height:255px}}
 @media(max-width:800px){#explore .doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#explore .door-in{min-height:238px;padding:16px}}
 @media(max-width:560px){#explore .doors{gap:10px}#explore .door-in{min-height:208px;padding:13px 12px;gap:7px}#explore .door-art{min-height:76px}#explore .door-art svg{height:76px;width:min(100%,150px)}#explore .door strong{font-size:18px;line-height:1.12}#explore .door-count{font-size:12px}}
 @media(max-width:370px){#explore .door-in{min-height:196px;padding:12px 10px}#explore .door-code{letter-spacing:.05em}#explore .door strong{font-size:17px}}
-@media(prefers-reduced-motion:reduce){ #explore .door-in,#explore .door-art .trace,#explore .door-art .point,#explore .door-arrow{transition:none!important}#explore .door-art .trace{opacity:1}#explore .door-art .point{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#explore .door-in,#explore .door-art svg,#explore .door strong,#explore .door-art .trace,#explore .door-art .point,#explore .door-arrow{transition:none!important}#explore .door-art .trace{stroke-dashoffset:0;opacity:1}#explore .door-art .point{opacity:1;transform:none}}
 </style>
 </head><body><a class="skip" href="#main">Skip to content</a><div class="progress" id="progress"></div><header class="header"><div class="wrap nav"><a class="brand" href="#top"><i>OD</i>Om Dangol</a><nav class="links" id="nav"><a href="#top">Home</a><a href="#explore">Explore</a><a href="#work">Projects</a><a href="#journey">Journey</a><a href="#about">About</a></nav><div><button class="icon" id="theme" aria-label="Switch to light theme">☾</button><a class="button primary nav-cta" href="#contact">Let's talk</a><button class="icon menu" id="menu" aria-expanded="false" aria-controls="nav">☰</button></div></div></header><main id="main">
 <section class="wrap hero" id="top"><div><p class="hero-kicker">Kathmandu, Nepal · Computing with AI</p><h1>Hi, I'm <span>Om Dangol.</span></h1><p class="role">I build <span class="role-window" aria-hidden="true"><span class="role-words"><span>useful software.</span><span>intelligent systems.</span><span>AI-powered tools.</span><span>thoughtful experiences.</span><span>useful software.</span></span></span><span class="sr-only">useful software.</span></p><p class="intro">Computing with Artificial Intelligence student exploring the space between thoughtful software, practical AI and products that solve real problems.</p><div class="actions"><a class="button primary" href="#work">Explore my work ↗</a><a class="button" href="#contact">Get in touch ↗</a></div><div class="meta"><span>AI</span><span>Software</span><span>Systems</span></div></div><div class="portrait-zone"><div class="portrait"><img src="/portrait-workspace.jpg" alt="Om Dangol in his home workspace"><div class="portrait-label"><b>Om Dangol</b><small>KATHMANDU, NEPAL</small></div></div></div></section>
