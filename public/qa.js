@@ -40,31 +40,9 @@
       menuButton?.setAttribute('aria-label', 'Open navigation menu');
     }
   });
-  document.querySelectorAll('input[name="name"], textarea[name="message"]').forEach((field) => {
-    field.setAttribute('autocomplete', field.name === 'name' ? 'name' : 'off');
-  });
   document.querySelectorAll('img').forEach((image) => {
     if (!image.hasAttribute('width')) image.setAttribute('width', image.classList.contains('portrait') ? '640' : '1000');
     if (!image.hasAttribute('height')) image.setAttribute('height', image.classList.contains('portrait') ? '760' : '640');
     if (image.closest('.project')) image.loading = 'lazy';
   });
-  window.buildContactMailto = (name, message) => `mailto:omdangol68@gmail.com?subject=${encodeURIComponent(`Portfolio enquiry from ${name}`)}&body=${encodeURIComponent(message)}`;
-  document.querySelector('#form')?.addEventListener('submit', (event) => {
-    const form = event.currentTarget;
-    const fields = new FormData(form);
-    const href = window.buildContactMailto(fields.get('name'), fields.get('message'));
-    let status = form.querySelector('#form-status');
-    if (!status) {
-      status = document.createElement('p');
-      status.id = 'form-status';
-      status.setAttribute('role', 'status');
-      status.setAttribute('aria-live', 'polite');
-      form.append(status);
-    }
-    status.replaceChildren(document.createTextNode('Your email app should open. If it does not, use this link: '));
-    const link = document.createElement('a');
-    link.href = href;
-    link.textContent = 'Open email draft';
-    status.append(link);
-  }, { capture: true });
 })();

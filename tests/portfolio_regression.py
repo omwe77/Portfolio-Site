@@ -133,18 +133,10 @@ with sync_playwright() as playwright:
         check(f"{label}px keyboard skip link and visible focus", focus["skip"] and focus["outline"] == "3px")
 
         if width == 1440:
-            page.locator("#form-open").click()
-            form = page.locator("#form")
-            check("contact form opens", page.locator("#form-dialog").evaluate("d => d.open"))
-            check("contact form required validation", not form.evaluate("f => f.checkValidity()"))
-            page.locator("input[name='name']").fill("Om & Co")
-            page.locator("textarea[name='message']").fill("A question about <V2> & testing")
-            check("contact form valid after required fields", form.evaluate("f => f.checkValidity()"))
-            mailto = page.evaluate("buildContactMailto('Om & Co', 'A question about <V2> & testing')")
-            check("mailto URL encodes recipient subject and message", mailto.startswith("mailto:omdangol68@gmail.com?") and "%26" in mailto and "%3C" in mailto)
-            form.locator("button[type='submit'],button:not([type])").click()
-            check("contact form explains external email app and provides fallback link", page.locator("#form-status").inner_text().startswith("Your email app should open") and page.locator("#form-status a").get_attribute("href").startswith("mailto:"))
-            page.locator("#form-close").click()
+            email_link = page.locator("#contact .actions a.button.primary")
+            email_href = email_link.get_attribute("href")
+            check("Email Om opens a Gmail compose addressed to Om", email_href == "https://mail.google.com/mail/?view=cm&fs=1&to=omdangol68%40gmail.com" and email_link.get_attribute("target") == "_blank" and "noopener" in email_link.get_attribute("rel"))
+            check("removed contact form has no button or dialog", page.locator("#form-open, #form-dialog, #form").count() == 0)
         # Scroll through the page so each viewport-aware reveal is exercised before capture.
         page.evaluate("""async () => { const step=Math.max(220,innerHeight*.7); for(let y=0;y<document.documentElement.scrollHeight;y+=step){scrollTo({top:y,behavior:'instant'});await new Promise(resolve=>setTimeout(resolve,60));} scrollTo({top:0,behavior:'instant'}); }""")
         page.wait_for_timeout(700)
