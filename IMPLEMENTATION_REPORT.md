@@ -158,7 +158,7 @@ The Vercel deployment status above is from the GitHub Vercel commit check; no Ve
 
 ## Prioritised audit findings
 
-- **Critical (factual):** the visible education timeline incorrectly implied a 2024 start. It now states “After Dashain 2025” and expected December 2028, without inventing a precise start date or academic claims.
+- **Critical (factual):** the visible education timeline incorrectly implied a 2024 start. It now states  "2025" and expected December 2028, without inventing a precise start date or academic claims.
 - **Major (visual credibility):** the homepage leaned on saturated arch cards, small uppercase metadata, and fabricated terminal-like project art for projects without verified screenshots. The refined presentation uses a restrained ink/paper palette with a clay accent sampled from the supplied real portrait, less microcopy, rectangular project rows, and truthful process diagrams. Genuine screenshots remain for the projects that have them.
 - **Major (cross-page consistency):** project pages used a visually unrelated dark green/Arial template. Their typography, spacing, color, metadata, skip link, and section hierarchy now match the homepage editorial system.
 - **Major (mobile readability):** portrait overlays and narrow text layouts competed with content and could clip key text. The final 390 px and 360 px screenshots and regression checks show fit without horizontal overflow; portrait treatment is consistent and unfiltered.
@@ -194,7 +194,7 @@ After case-study captures: `reports/ui-audit/after/case-hamigenz.png`, `case-are
 - **PASS — Browser regression: 349 passed, 0 failed, 349 checks.** The final full run covers all four viewport sizes, six routes, project cards and filters, dialogs/deep links, theme, mobile menu state and touch sizing, keyboard skip/focus, contact validation and mailto messaging, reduced motion, visible content, text fit, images, horizontal overflow, console errors, and uncaught runtime errors.
 - **PASS — Routes/build:** all six generated case-study routes render; build output reports six routes. The final browser run checked route content, section completeness, canonical metadata, repository-link presence, and skip links at each viewport.
 - **PASS — Images:** all three homepage images decoded with nonzero natural dimensions in the suite at each tested width.
-- **PASS — Education fact:** regression assertion confirms “After Dashain 2025”, “December 2028”, and no 2024 in the timeline.
+- **PASS — Education fact:** regression assertion confirms “2025”, “December 2028”, and no 2024 in the timeline.
 - **PASS — Accessibility checks performed:** keyboard skip link and visible focus, mobile menu ARIA state, minimum touch control size, reduced-motion behavior, and rendered category contrast. The tested category text contrast measured 13.31:1 in the browser audit.
 - **PASS — Runtime:** regression suite recorded zero console errors and zero uncaught page errors.
 - **PASS — Build:** `$env:PUBLIC_ORIGIN=https://portfolio-gamma-coral-47.vercel.app; npm.cmd run build` completed and generated six case-study routes in `dist`.
@@ -227,3 +227,19 @@ After case-study captures: `reports/ui-audit/after/case-hamigenz.png`, `case-are
 ## Release assessment
 
 **V2 is ready for owner review as a local feature-branch refinement, but not yet verified for production.** The 349-check regression, production-origin static build, syntax checks, and visual review passed. Before release, review the screenshots and diff, then run the same checks on the approved release candidate and verify the deployed site after explicit deployment approval.
+
+## Production deployment verification — 2026-11-10
+
+- Feature branch `rebuild/art-directed-portfolio` commit: `384a0b0ea3b8059369d29a8aa67f554ba9e59e2a`.
+- Normal non-force merge into `main`: `ba40fac7ddcfd540c44f2793d014355cc5cc84a8` (`Merge portfolio UI refinement and project screenshots`).
+- Push to `origin/main`: PASS; advanced `8d0e050` to `ba40fac`. Working tree was clean after merge.
+- Vercel GitHub commit status for `ba40fac7ddcfd540c44f2793d014355cc5cc84a8`: **success — “Deployment has completed”**; deployment target `https://vercel.com/omwe77/portfolio/Efy2zqbZyKnJ12SHoiTMNRquDPKL`.
+- Production homepage: `https://portfolio-gamma-coral-47.vercel.app/`.
+- Live HTTP smoke test: PASS; homepage and all six `/projects/{hamigenz,arena,subscription,ecomart,medstore,spam}/` routes returned HTTP 200 with `text/html; charset=utf-8`.
+- The added `/ai-subscription-manager.png` and `/medstore-cli.png` returned HTTP 200 `image/png`; `/ecomart-homepage.jpeg` returned HTTP 200 `image/jpeg`.
+- Full Playwright regression against the deployed production URL: **353 passed, 0 failed, 353 checks**, across 1440, 1024, 390, and 360 px. Checked canonical/OG/sitemap/robots, local anchor and CTA destinations, cards and filters, all six project dialogs/deep links/routes and repository anchors, theme switching, mobile navigation, keyboard skip/focus, contact validation/mailto fallback, reduced motion, six loaded homepage images, overflow, console and runtime errors.
+- External project destinations checked in the same release run: all six GitHub repositories and both existing live demos returned HTTP 200.
+- `npm.cmd run build` with the configured production `PUBLIC_ORIGIN`: PASS; all six case-study routes generated. `git diff --cached --check` passed before the release merge.
+- Production after-screenshots were captured by the live regression in `reports/ui-audit/after/regression/`; final desktop/mobile renders were also inspected.
+
+**Production result:** Portfolio updates are live at the confirmed Vercel URL. The Vercel success status above applies to merge commit `ba40fac`; this verification addendum is a subsequent documentation-only update and will itself trigger the normal Git-connected Vercel deployment when pushed.
