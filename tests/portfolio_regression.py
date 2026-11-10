@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright
 BASE_URL = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:3000"
 PUBLIC_ORIGIN = os.environ["PUBLIC_ORIGIN"].rstrip("/")
 EXPECT_PREVIEW = os.environ.get("EXPECT_PREVIEW") == "1"
-SCREENSHOTS = pathlib.Path("reports/screenshots")
+SCREENSHOTS = pathlib.Path("reports/ui-audit/after/regression")
 results = []
 console_errors = []
 page_errors = []
@@ -44,14 +44,24 @@ with sync_playwright() as playwright:
                 check("robots sitemap URL uses PUBLIC_ORIGIN", robots_response.status == 200 and robots_response.headers.get("content-type", "").startswith("text/plain") and f"Sitemap: {PUBLIC_ORIGIN}/sitemap.xml" in robots_text)
             check("LinkedIn destination matches the existing profile record", page.locator("a[href^='https://www.linkedin.com/in/']").count() == 1 and page.locator("a[href^='https://www.linkedin.com/in/']").get_attribute("href") == "https://www.linkedin.com/in/om-dangol-0a39243a7/")
         check(f"{label}px no horizontal overflow", page.evaluate("document.documentElement.scrollWidth === document.documentElement.clientWidth"))
+        text_boxes = page.locator(".hero h1,.intro,.heading h2,.copy h3").evaluate_all("els => els.map(e => ({text:e.innerText, client:e.clientWidth, scroll:e.scrollWidth, right:e.getBoundingClientRect().right}))")
+        check(f"{label}px key text fits its box", all(e["scroll"] <= e["client"] + 1 and e["right"] <= width + 1 for e in text_boxes), str(text_boxes))
+        if width == 1440:
+            anchor_targets = page.locator("a[href^='#']").evaluate_all("links => links.map(link => !!document.querySelector(link.getAttribute('href')))")
+            check("all in-page links target existing sections", all(anchor_targets))
+            for selector, action_label, target in [("a.button[href='#work']", "Explore my work", "#work"), (".hero .actions a[href='#contact']", "Get in touch", "#contact"), ("footer a[href='#top']", "Back to top", "#top")]:
+                page.locator(selector).click()
+                check(f"{action_label} button navigates to {target}", page.evaluate("target => location.hash === target && Boolean(document.querySelector(target))", target))
         check(f"{label}px all six projects present", page.locator(".project").count() == 6)
         check(f"{label}px all four category doors present", page.locator(".door").count() == 4)
+        if width == 1440:
+            check("education timeline starts after Dashain 2025 and expects December 2028", "After Dashain 2025" in page.locator("#journey").inner_text() and "December 2028" in page.locator("#journey").inner_text() and "2024" not in page.locator("#journey").inner_text())
         page.locator("img").evaluate_all("images => images.forEach(image => { image.loading = 'eager'; })")
         page.wait_for_function("Array.from(document.images).every(image => image.complete)")
-        door_audit = page.locator(".door").evaluate_all("doors => { const lum = c => { const v = c.map(n => n / 255).map(n => n <= .04045 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4); return .2126*v[0] + .7152*v[1] + .0722*v[2] }; const ratios = doors.map(d => { const bg = getComputedStyle(d.querySelector('.door-in')).backgroundImage; const match = bg.match(/rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\)/); const fg = getComputedStyle(d).color.match(/\\d+/g).slice(0,3).map(Number); if (!match) return 0; const a = lum(fg), b = lum(match.slice(1).map(Number)); return (Math.max(a,b)+.05)/(Math.min(a,b)+.05); }); return {ratios, small: Math.min(...doors.map(d => parseFloat(getComputedStyle(d.querySelector('small')).fontSize))), title: Math.min(...doors.map(d => parseFloat(getComputedStyle(d.querySelector('strong')).fontSize)))}; }")
+        door_audit = page.locator(".door").evaluate_all("doors => { const lum = c => { const v = c.map(n => n / 255).map(n => n <= .04045 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4); return .2126*v[0] + .7152*v[1] + .0722*v[2] }; const ratios = doors.map(d => { const bg = getComputedStyle(d.querySelector('.door-in')).backgroundColor; const match = bg.match(/rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\)/); const fg = getComputedStyle(d).color.match(/\\d+/g).slice(0,3).map(Number); if (!match) return 0; const a = lum(fg), b = lum(match.slice(1).map(Number)); return (Math.max(a,b)+.05)/(Math.min(a,b)+.05); }); return {ratios, small: Math.min(...doors.map(d => parseFloat(getComputedStyle(d.querySelector('small')).fontSize))), title: Math.min(...doors.map(d => parseFloat(getComputedStyle(d.querySelector('strong')).fontSize)))}; }")
         check(f"{label}px category doors meet contrast and type sizing", min(door_audit["ratios"]) >= 4.5 and door_audit["small"] >= 11 and door_audit["title"] >= (17 if width <= 480 else 20), str(door_audit))
         image_status = page.locator("img").evaluate_all("imgs => imgs.map(i => ({src: i.getAttribute('src'), currentSrc: i.currentSrc, complete: i.complete, naturalWidth: i.naturalWidth}))")
-        check(f"{label}px portrait and screenshots load", len(image_status) == 3 and all(i["complete"] and i["naturalWidth"] > 0 for i in image_status), str(image_status))
+        check(f"{label}px portrait and screenshots load", len(image_status) == 6 and all(i["complete"] and i["naturalWidth"] > 0 for i in image_status), str(image_status))
         SCREENSHOTS.mkdir(parents=True, exist_ok=True)
 
         for category, count in [("AI & ML", 2), ("Web", 2), ("Software", 2), ("All", 6)]:
@@ -74,6 +84,7 @@ with sync_playwright() as playwright:
             page.locator("#close").click()
             route_response = page.goto(f"{BASE_URL}/projects/{slug}/", wait_until="networkidle")
             check(f"{label}px {title} route HTTP 200", route_response.status == 200)
+            check(f"{label}px {title} route has skip link", page.locator(".skip[href='#main']").count() == 1 and page.locator("main#main").count() == 1)
             headings = page.locator("h2").all_text_contents()
             check(f"{label}px {title} route server-rendered", page.locator("h1").inner_text() == title and all(section in headings for section in ["Problem", "Approach", "Architecture & technologies", "Results", "Challenges & limitations"]))
             section_copy = page.locator("h2 + p").all_text_contents()
@@ -85,13 +96,19 @@ with sync_playwright() as playwright:
             check(f"{label}px {title} repository href present", page.locator("a[href^='https://github.com/omwe77/']").count() == 1)
             page.goto(BASE_URL, wait_until="networkidle")
 
+        dark_surface = page.locator("body").evaluate("b => getComputedStyle(b).backgroundColor")
         page.locator("#theme").click()
-        check(f"{label}px theme switches to light", page.locator("body").evaluate("b => b.classList.contains('light')"))
+        light_surface = page.locator("body").evaluate("b => getComputedStyle(b).backgroundColor")
+        check(f"{label}px theme switches to light", page.locator("body").evaluate("b => b.classList.contains('light')") and dark_surface != light_surface)
+        if width == 1440:
+            page.screenshot(path=str(SCREENSHOTS / "light-1440.png"), full_page=True)
         page.locator("#theme").click()
         check(f"{label}px theme switches back to dark", not page.locator("body").evaluate("b => b.classList.contains('light')"))
 
         if width <= 800:
             page.locator("#menu").click()
+            visible_menu = page.locator("#menu").evaluate("e => { const r=e.getBoundingClientRect(); return getComputedStyle(e).display !== 'none' && r.width >= 44 && r.height >= 44 }")
+            check(f"{label}px mobile menu control is visible and touch-sized", visible_menu)
             menu_open = page.locator("#nav").evaluate("n => n.classList.contains('open')")
             menu_label = page.locator("#menu").get_attribute("aria-label")
             check(f"{label}px mobile menu opens", menu_open and menu_label == "Close navigation menu", f"open={menu_open}, label={menu_label}")
@@ -124,7 +141,7 @@ with sync_playwright() as playwright:
         page.evaluate("window.scrollTo(0, 0)")
         page.wait_for_timeout(700)
         page.evaluate("document.activeElement instanceof HTMLElement && document.activeElement.blur()")
-        check(f"{label}px project cards reveal after scrolling", page.locator(".project").first.evaluate("e => getComputedStyle(e).opacity") == "1")
+        check(f"{label}px project content remains visible without scroll scripting", page.locator(".project").first.evaluate("e => getComputedStyle(e).opacity") == "1")
         page.screenshot(path=str(SCREENSHOTS / f"v2-{label}.png"), full_page=True)
         context.close()
 

@@ -149,3 +149,81 @@ The user confirmed Vercel Root Directory is `./` before merge. `vercel.json` is 
 The Vercel deployment status above is from the GitHub Vercel commit check; no Vercel dashboard settings were changed. LinkedIn profile identity remains unverified because automated LinkedIn requests are blocked.
 
 **Git release details:** feature branch `rebuild/immersive-reference` remains on origin at `bab6a608c1ddc06160f449f35e30445483ff1f61`. Production replacement merge commit: `13ed169d0f56a447dbe6fabb157b27e8df90cf7b`. Follow-up report and screenshot commit: `343d6742157a2d51ec419f6b2194c02a438e3ad1`.
+
+# Portfolio V2 — UI/UX audit and refinement addendum (2026-11-09)
+
+## Final status
+
+**PASS — Local refinement complete on `rebuild/art-directed-portfolio`, based on `8d0e0501671f8c8d401d6c014742c781ab27a7f8`.** The existing architecture and six project routes were retained. Production remains unchanged: this branch has not been pushed, merged, or deployed. Production readiness is **ready for owner review before release**, not yet production verified.
+
+## Prioritised audit findings
+
+- **Critical (factual):** the visible education timeline incorrectly implied a 2024 start. It now states “After Dashain 2025” and expected December 2028, without inventing a precise start date or academic claims.
+- **Major (visual credibility):** the homepage leaned on saturated arch cards, small uppercase metadata, and fabricated terminal-like project art for projects without verified screenshots. The refined presentation uses a restrained ink/paper palette with a clay accent sampled from the supplied real portrait, less microcopy, rectangular project rows, and truthful process diagrams. Genuine screenshots remain for the projects that have them.
+- **Major (cross-page consistency):** project pages used a visually unrelated dark green/Arial template. Their typography, spacing, color, metadata, skip link, and section hierarchy now match the homepage editorial system.
+- **Major (mobile readability):** portrait overlays and narrow text layouts competed with content and could clip key text. The final 390 px and 360 px screenshots and regression checks show fit without horizontal overflow; portrait treatment is consistent and unfiltered.
+- **Minor (motion):** timed role rotation and scroll-reveal behavior added activity without improving comprehension. Essential content is visible immediately; remaining movement is brief entrance/state feedback and respects reduced motion.
+
+## Design decisions and changes
+
+- Adopted a “working archive” direction: warm editorial serif display type, clear sans-serif reading text, ink background, warm paper type, and restrained clay links/actions. Light theme remains supported.
+- Kept the user-provided portrait and genuine project screenshots. No face edits, filters, or generated project imagery were introduced.
+- Removed the timed role carousel and hidden scroll-reveal dependency so content is immediately available. Retained purposeful navigation, filter, theme, dialog, hover/focus, and button state feedback.
+- Updated case-study category presentation and added skip-to-content support on case-study routes.
+- Preserved six project cards, filters, modal/deep links, six shareable case-study routes, theme switching, mobile menu, contact flow, and existing architecture.
+
+## Files changed in this refinement
+
+- `public/index.html` — revised homepage visual system, portrait presentation, project/category composition, motion, and corrected education timeline.
+- `public/qa.js` — removed QA-only typography overrides that masked the intended design; interaction implementation remains in place.
+- `templates/case-study.html` — aligned case-study metadata/category presentation with the homepage design.
+- `tests/portfolio_regression.py` — added education fact, key-text fit, touch target, theme appearance and skip-link checks; isolated screenshot output under the audit folder.
+- `IMPLEMENTATION_REPORT.md` — this addendum.
+- `reports/ui-audit/before/` and `reports/ui-audit/after/` — visual evidence. Four tracked legacy screenshot files were restored after capture so test output does not modify unrelated existing report assets.
+
+## Browser review and screenshots
+
+Fresh Chromium browser screenshots were captured and visually inspected at 1440 × 900 desktop, 1024 × 900 tablet, 390 × 844 mobile, and 360 × 800 narrow mobile. The six individual case-study routes were also captured and reviewed. The light theme was inspected at 1440 × 900.
+
+Before homepage captures: `reports/ui-audit/before/v2-1440.png`, `v2-1024.png`, `v2-390.png`, `v2-360.png`. Before route captures: `reports/ui-audit/before/routes/`.
+After homepage captures: `reports/ui-audit/after/home-1440.png`, `home-1024.png`, `home-390.png`, `home-360.png`, and `home-light-1440.png`.
+After case-study captures: `reports/ui-audit/after/case-hamigenz.png`, `case-arena.png`, `case-subscription.png`, `case-ecomart.png`, `case-medstore.png`, and `case-spam.png`.
+
+## Verification results
+
+- **PASS — Browser regression: 349 passed, 0 failed, 349 checks.** The final full run covers all four viewport sizes, six routes, project cards and filters, dialogs/deep links, theme, mobile menu state and touch sizing, keyboard skip/focus, contact validation and mailto messaging, reduced motion, visible content, text fit, images, horizontal overflow, console errors, and uncaught runtime errors.
+- **PASS — Routes/build:** all six generated case-study routes render; build output reports six routes. The final browser run checked route content, section completeness, canonical metadata, repository-link presence, and skip links at each viewport.
+- **PASS — Images:** all three homepage images decoded with nonzero natural dimensions in the suite at each tested width.
+- **PASS — Education fact:** regression assertion confirms “After Dashain 2025”, “December 2028”, and no 2024 in the timeline.
+- **PASS — Accessibility checks performed:** keyboard skip link and visible focus, mobile menu ARIA state, minimum touch control size, reduced-motion behavior, and rendered category contrast. The tested category text contrast measured 13.31:1 in the browser audit.
+- **PASS — Runtime:** regression suite recorded zero console errors and zero uncaught page errors.
+- **PASS — Build:** `$env:PUBLIC_ORIGIN=https://portfolio-gamma-coral-47.vercel.app; npm.cmd run build` completed and generated six case-study routes in `dist`.
+- **PASS — Syntax:** `node --check scripts/build.mjs`, `node --check server.mjs`, `node --check case-studies.js`, and `node --check public/qa.js` each exited 0. Inline homepage scripts were exercised by the browser suite.
+- **PASS — Whitespace:** `git diff --check` exited 0. Git only reported working-copy LF-to-CRLF notices for the modified HTML/Python files.
+
+## Commands and actions in this refinement
+
+| Command/action | Actual result |
+| --- | --- |
+| `Get-ChildItem -Force` | PASS; confirmed repository contents. |
+| `git status --short`, `git branch --show-current`, `git rev-parse HEAD`, `git diff --stat`, `git diff --check` | PASS; branch was `rebuild/art-directed-portfolio`, baseline HEAD `8d0e0501671f8c8d401d6c014742c781ab27a7f8`; visual files and audit captures were the only task changes at that point. |
+| `rg -n "2024|expected December|After Dashain" public templates case-studies.js` | PASS; visible timeline contains the corrected 2025-after-Dashain start and December 2028 expectation; no matching 2024 claim in the inspected source. |
+| Final Playwright suite (`tests/portfolio_regression.py`, preview on port 3001; final run after template adjustment) | PASS; 349 passed, 0 failed, 349 checks. |
+| `npm.cmd run build` with `PUBLIC_ORIGIN=https://portfolio-gamma-coral-47.vercel.app` | PASS; six project routes generated in `dist`. |
+| `node --check scripts/build.mjs`; `node --check server.mjs`; `node --check case-studies.js`; `node --check public/qa.js` | PASS; all four exited 0. |
+| `git diff --check` | PASS; exited 0, with only line-ending notices. |
+| Screenshot capture and visual inspection | PASS; before/after home at four widths, light home, and all six after routes reviewed. |
+| `git restore -- reports/screenshots/v2-1024.png reports/screenshots/v2-1440.png reports/screenshots/v2-360.png reports/screenshots/v2-390.png` | PASS; restored the four pre-existing tracked screenshots overwritten by the test suite. Before and after audit captures are stored separately. |
+| Attempt to parse inline HTML scripts using Node `new Function` in the restricted persistent evaluator | BLOCKED by evaluator policy (“Code generation from strings disallowed for this context”); browser regression loaded and exercised the page scripts successfully. |
+
+## Accessibility and known limitations
+
+- **PARTIAL — Accessibility:** rendered checks cover contrast for category text, keyboard focus/skip, touch size, menu ARIA, and reduced motion. A complete WCAG audit, screen-reader walkthrough, and physical-device testing were not performed. The heuristic design detector surfaced some small-label and spacing heuristics; these were reviewed against the rendered pages, and the most consequential text-density issues were reduced. Some micro-labels remain intentionally secondary.
+- **PARTIAL — External project links:** regression checks confirm repository/demo anchors are present where recorded; it does not establish that every third-party destination is currently reachable.
+- **PARTIAL — Font delivery:** visual review used the configured web font service and local fallback stack; offline/font-provider failure behavior was not separately network-throttled in this pass.
+- **BLOCKED — Production verification:** no push, merge, or deployment was authorized. The production URL therefore still serves its previously deployed version; these refinements are local to the feature branch.
+- No backend, API, deployment configuration, project facts, or dependency changes were made.
+
+## Release assessment
+
+**V2 is ready for owner review as a local feature-branch refinement, but not yet verified for production.** The 349-check regression, production-origin static build, syntax checks, and visual review passed. Before release, review the screenshots and diff, then run the same checks on the approved release candidate and verify the deployed site after explicit deployment approval.

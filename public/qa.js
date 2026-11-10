@@ -4,14 +4,7 @@
     ecomart: 'ecomart', medstore: 'medstore', spam: 'spam'
   };
   const style = document.createElement('style');
-  style.textContent = `
-    :focus-visible{outline:3px solid #b9f27c;outline-offset:3px}
-    .door-in{line-height:1.35;letter-spacing:0}
-    .door small{font-size:12px;font-weight:800;line-height:1.35;opacity:1}
-    .door strong{font-size:20px;line-height:1.18;text-shadow:0 1px 2px #0008}
-    .meta,.project-meta,.tags span,.project-actions button,.project-actions a,.footer{font-size:11px}
-    @media(max-width:480px){.door small{font-size:11px}.door strong{font-size:17px;line-height:1.2}.meta{font-size:11px}}
-  `;
+  style.textContent = `:focus-visible{outline:3px solid var(--lime);outline-offset:4px}`;
   document.head.append(style);
   document.querySelectorAll('[data-open]').forEach((button) => {
     const slug = cases[button.dataset.open];
