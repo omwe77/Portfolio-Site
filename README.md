@@ -45,7 +45,7 @@ Open `http://127.0.0.1:3001`. `PUBLIC_ORIGIN` is required by all builds. Vercel 
 - `/projects/medstore/`
 - `/projects/spam/`
 
-Homepage category filters, project dialogs, theme switching, mobile navigation, and motion preferences are implemented in the existing page. Each project page has a canonical URL and links to its recorded repository; Arena_Core and hamiGenZ also link to their recorded demos.
+Homepage category filters, project dialogs, theme switching, mobile navigation, and motion preferences are implemented in the existing page. The four discipline cards draw their small route diagrams on hover or keyboard focus, and keep the selected discipline visible after filtering. Each project page has a canonical URL and links to its recorded repository; Arena_Core and hamiGenZ also link to their recorded demos.
 
 ## Contact behavior
 

@@ -26,7 +26,7 @@ with sync_playwright() as playwright:
     for width, height, label in [(1440, 900, "1440"), (1024, 900, "1024"), (390, 844, "390"), (360, 800, "360")]:
         context = browser.new_context(viewport={"width": width, "height": height})
         page = context.new_page()
-        page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
+        page.on("console", lambda message: console_errors.append(f"{message.text} @ {message.location.get('url', 'unknown')}") if message.type == "error" else None)
         page.on("pageerror", lambda error: page_errors.append(str(error)))
         response = page.goto(BASE_URL, wait_until="networkidle")
         check(f"{label}px homepage HTTP 200", response.status == 200)
@@ -58,12 +58,15 @@ with sync_playwright() as playwright:
             check("project cards reveal when scrolled into view", page.locator(".project.motion-reveal.is-visible").count() > 0)
             hovered = page.locator(".project").first
             hovered.hover()
+            page.wait_for_timeout(250)
             hover_state = hovered.evaluate("e => ({card:getComputedStyle(e).transform, image:getComputedStyle(e.querySelector('.media img')).transform})")
-            check("project hover gives card and image feedback", hover_state["card"] != "none" and hover_state["image"] != "none", str(hover_state))
+            identity_transform = "matrix(1, 0, 0, 1, 0, 0)"
+            check("project hover moves card and image", hover_state["card"] not in ("none", identity_transform) and hover_state["image"] not in ("none", identity_transform), str(hover_state))
             discipline_card = page.locator(".door").first
             discipline_card.hover()
-            discipline_motion = discipline_card.evaluate("e => ({card:getComputedStyle(e.querySelector('.door-in')).transform, trace:getComputedStyle(e.querySelector('.door-art .trace')).opacity})")
-            check("discipline card hover draws its diagram", discipline_motion["card"] != "none" and discipline_motion["trace"] == "1", str(discipline_motion))
+            page.wait_for_timeout(500)
+            discipline_motion = discipline_card.evaluate("e => ({card:getComputedStyle(e.querySelector('.door-in')).transform, trace:getComputedStyle(e.querySelector('.door-art .trace')).opacity, route:parseFloat(getComputedStyle(e.querySelector('.door-art .trace')).strokeDashoffset)})")
+            check("discipline card hover draws its route", discipline_motion["card"] not in ("none", identity_transform) and discipline_motion["trace"] == "1" and discipline_motion["route"] == 0, str(discipline_motion))
             page.mouse.move(0, 0)
             anchor_targets = page.locator("a[href^='#']").evaluate_all("links => links.map(link => !!document.querySelector(link.getAttribute('href')))")
             check("all in-page links target existing sections", all(anchor_targets))
@@ -99,7 +102,7 @@ with sync_playwright() as playwright:
         for slug, title in project_data:
             page.locator(f"button[data-open='{slug}']").click()
             check(f"{label}px {title} dialog opens", page.locator("#dialog").evaluate("d => d.open"))
-            route_link = page.locator("#dialog .case-route")
+            route_link = page.locator("#dialog #case-route")
             check(f"{label}px {title} has deep link", route_link.get_attribute("href") == f"/projects/{slug}/")
             page.locator("#close").click()
             route_response = page.goto(f"{BASE_URL}/projects/{slug}/", wait_until="networkidle")
