@@ -47,6 +47,16 @@ with sync_playwright() as playwright:
         text_boxes = page.locator(".hero h1,.intro,.heading h2,.copy h3").evaluate_all("els => els.map(e => ({text:e.innerText, client:e.clientWidth, scroll:e.scrollWidth, right:e.getBoundingClientRect().right}))")
         check(f"{label}px key text fits its box", all(e["scroll"] <= e["client"] + 1 and e["right"] <= width + 1 for e in text_boxes), str(text_boxes))
         if width == 1440:
+            role_motion = page.locator(".role-words").evaluate("el => { const animation=el.getAnimations()[0]; const active=getComputedStyle(el).animationName==='role-scroll' && getComputedStyle(el).animationPlayState==='running'; if(!animation)return {active,moved:false,count:el.children.length}; animation.currentTime=3500; const moved=getComputedStyle(el).transform!=='none' && getComputedStyle(el).transform!=='matrix(1, 0, 0, 1, 0, 0)'; animation.currentTime=0; return {active,moved,count:el.children.length}; }")
+            check("hero phrases scroll smoothly while visible", role_motion["active"] and role_motion["moved"] and role_motion["count"] == 5, str(role_motion))
+            page.locator("#work").scroll_into_view_if_needed()
+            page.wait_for_function("document.querySelector('.project.motion-reveal.is-visible') !== null")
+            check("project cards reveal when scrolled into view", page.locator(".project.motion-reveal.is-visible").count() > 0)
+            hovered = page.locator(".project").first
+            hovered.hover()
+            hover_state = hovered.evaluate("e => ({card:getComputedStyle(e).transform, image:getComputedStyle(e.querySelector('.media img')).transform})")
+            check("project hover gives card and image feedback", hover_state["card"] != "none" and hover_state["image"] != "none", str(hover_state))
+            page.mouse.move(0, 0)
             anchor_targets = page.locator("a[href^='#']").evaluate_all("links => links.map(link => !!document.querySelector(link.getAttribute('href')))")
             check("all in-page links target existing sections", all(anchor_targets))
             for selector, action_label, target in [("a.button[href='#work']", "Explore my work", "#work"), (".hero .actions a[href='#contact']", "Get in touch", "#contact"), ("footer a[href='#top']", "Back to top", "#top")]:
@@ -135,11 +145,10 @@ with sync_playwright() as playwright:
             form.locator("button[type='submit'],button:not([type])").click()
             check("contact form explains external email app and provides fallback link", page.locator("#form-status").inner_text().startswith("Your email app should open") and page.locator("#form-status a").get_attribute("href").startswith("mailto:"))
             page.locator("#form-close").click()
-        # Trigger every IntersectionObserver reveal before taking a full-page capture.
-        page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+        # Scroll through the page so each viewport-aware reveal is exercised before capture.
+        page.evaluate("""async () => { const step=Math.max(220,innerHeight*.7); for(let y=0;y<document.documentElement.scrollHeight;y+=step){scrollTo({top:y,behavior:'instant'});await new Promise(resolve=>setTimeout(resolve,60));} scrollTo({top:0,behavior:'instant'}); }""")
         page.wait_for_timeout(700)
-        page.evaluate("window.scrollTo(0, 0)")
-        page.wait_for_timeout(700)
+        check(f"{label}px scroll reveals finish visibly", page.locator(".motion-reveal:not(.is-visible)").count() == 0)
         page.evaluate("document.activeElement instanceof HTMLElement && document.activeElement.blur()")
         check(f"{label}px project content remains visible without scroll scripting", page.locator(".project").first.evaluate("e => getComputedStyle(e).opacity") == "1")
         page.screenshot(path=str(SCREENSHOTS / f"v2-{label}.png"), full_page=True)
@@ -148,10 +157,10 @@ with sync_playwright() as playwright:
     reduced = browser.new_context(viewport={"width": 1440, "height": 900}, reduced_motion="reduce")
     page = reduced.new_page()
     page.goto(BASE_URL, wait_until="networkidle")
-    initial_role = page.locator("#role").inner_text()
+    role_state = page.locator(".role-window").evaluate("e => ({animation:getComputedStyle(e.querySelector('.role-words')).animationName,animations:e.querySelector('.role-words').getAnimations().length,visible:e.getBoundingClientRect().height>0})")
     page.wait_for_timeout(3300)
-    check("reduced-motion role text remains static", page.locator("#role").inner_text() == initial_role)
-    check("reduced-motion reveal content is visible", page.locator(".project").first.evaluate("e => getComputedStyle(e).opacity") == "1")
+    check("reduced-motion disables auto-scrolling hero phrases", role_state["animation"] == "none" and role_state["animations"] == 0 and role_state["visible"])
+    check("reduced-motion leaves reveal content visible", page.locator(".project").first.evaluate("e => getComputedStyle(e).opacity") == "1")
     reduced.close()
     browser.close()
 
