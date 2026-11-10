@@ -56,6 +56,10 @@ with sync_playwright() as playwright:
             hovered.hover()
             hover_state = hovered.evaluate("e => ({card:getComputedStyle(e).transform, image:getComputedStyle(e.querySelector('.media img')).transform})")
             check("project hover gives card and image feedback", hover_state["card"] != "none" and hover_state["image"] != "none", str(hover_state))
+            discipline_card = page.locator(".door").first
+            discipline_card.hover()
+            discipline_motion = discipline_card.evaluate("e => ({card:getComputedStyle(e.querySelector('.door-in')).transform, trace:getComputedStyle(e.querySelector('.door-art .trace')).opacity})")
+            check("discipline card hover draws its diagram", discipline_motion["card"] != "none" and discipline_motion["trace"] == "1", str(discipline_motion))
             page.mouse.move(0, 0)
             anchor_targets = page.locator("a[href^='#']").evaluate_all("links => links.map(link => !!document.querySelector(link.getAttribute('href')))")
             check("all in-page links target existing sections", all(anchor_targets))
@@ -68,8 +72,8 @@ with sync_playwright() as playwright:
             check("education timeline shows 2025 and expects December 2028", "2025 · expected December 2028" in page.locator("#journey").inner_text() and "After Dashain" not in page.locator("#journey").inner_text() and "2024" not in page.locator("#journey").inner_text())
         page.locator("img").evaluate_all("images => images.forEach(image => { image.loading = 'eager'; })")
         page.wait_for_function("Array.from(document.images).every(image => image.complete)")
-        door_audit = page.locator(".door").evaluate_all("doors => { const lum = c => { const v = c.map(n => n / 255).map(n => n <= .04045 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4); return .2126*v[0] + .7152*v[1] + .0722*v[2] }; const ratios = doors.map(d => { const bg = getComputedStyle(d.querySelector('.door-in')).backgroundColor; const match = bg.match(/rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\)/); const fg = getComputedStyle(d).color.match(/\\d+/g).slice(0,3).map(Number); if (!match) return 0; const a = lum(fg), b = lum(match.slice(1).map(Number)); return (Math.max(a,b)+.05)/(Math.min(a,b)+.05); }); return {ratios, small: Math.min(...doors.map(d => parseFloat(getComputedStyle(d.querySelector('small')).fontSize))), title: Math.min(...doors.map(d => parseFloat(getComputedStyle(d.querySelector('strong')).fontSize)))}; }")
-        check(f"{label}px category doors meet contrast and type sizing", min(door_audit["ratios"]) >= 4.5 and door_audit["small"] >= 11 and door_audit["title"] >= (17 if width <= 480 else 20), str(door_audit))
+        door_audit = page.locator(".door").evaluate_all("doors => { const rgb=s=>{const v=s.match(/[\\d.]+/g).slice(0,3).map(Number);return s.startsWith('color(srgb')?v.map(n=>n*255):v}; const lum=c=>{const v=c.map(n=>n/255).map(n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4);return .2126*v[0]+.7152*v[1]+.0722*v[2]}; const score=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)}; const backgrounds=doors.map(d=>rgb(getComputedStyle(d.querySelector('.door-in')).backgroundColor)); return {ratios:doors.map((d,i)=>score(rgb(getComputedStyle(d.querySelector('strong')).color),backgrounds[i])),codeRatios:doors.map((d,i)=>score(rgb(getComputedStyle(d.querySelector('.door-code')).color),backgrounds[i])),countRatios:doors.map((d,i)=>score(rgb(getComputedStyle(d.querySelector('.door-count')).color),backgrounds[i])),small:Math.min(...doors.map(d=>parseFloat(getComputedStyle(d.querySelector('.door-count')).fontSize))),title:Math.min(...doors.map(d=>parseFloat(getComputedStyle(d.querySelector('strong')).fontSize))),artwork:doors.every(d=>d.querySelector('.door-art svg'))}; }")
+        check(f"{label}px category cards meet contrast, type sizing and artwork checks", min(door_audit["ratios"] + door_audit["codeRatios"] + door_audit["countRatios"]) >= 4.5 and door_audit["small"] >= 12 and door_audit["title"] >= (17 if width <= 480 else 20) and door_audit["artwork"], str(door_audit))
         image_status = page.locator("img").evaluate_all("imgs => imgs.map(i => ({src: i.getAttribute('src'), currentSrc: i.currentSrc, complete: i.complete, naturalWidth: i.naturalWidth}))")
         check(f"{label}px portrait and screenshots load", len(image_status) == 6 and all(i["complete"] and i["naturalWidth"] > 0 for i in image_status), str(image_status))
         SCREENSHOTS.mkdir(parents=True, exist_ok=True)
@@ -78,8 +82,10 @@ with sync_playwright() as playwright:
             page.locator(f".filter[data-filter='{category}']").click()
             check(f"{label}px {category} filter count {count}", page.locator(".project:not([hidden])").count() == count)
         for door, count in [(0, 2), (1, 2), (2, 2), (3, 2)]:
-            page.locator(".door").nth(door).click()
+            selected_door = page.locator(".door").nth(door)
+            selected_door.click()
             check(f"{label}px door {door + 1} filters projects", page.locator(".project:not([hidden])").count() == count)
+            check(f"{label}px door {door + 1} exposes active filter state", selected_door.get_attribute("aria-pressed") == "true")
 
         project_data = [
             ("hamigenz", "hamiGenZ"), ("arena", "Arena_Core"),
@@ -153,6 +159,8 @@ with sync_playwright() as playwright:
     page.wait_for_timeout(3300)
     check("reduced-motion disables auto-scrolling hero phrases", role_state["animation"] == "none" and role_state["animations"] == 0 and role_state["visible"])
     check("reduced-motion leaves reveal content visible", page.locator(".project").first.evaluate("e => getComputedStyle(e).opacity") == "1")
+    reduced_door = page.locator(".door").first.evaluate("e => ({transition:getComputedStyle(e.querySelector('.door-in')).transitionDuration,trace:getComputedStyle(e.querySelector('.door-art .trace')).opacity})")
+    check("reduced-motion removes card movement and keeps diagrams complete", reduced_door["transition"] == "0s" and reduced_door["trace"] == "1", str(reduced_door))
     reduced.close()
     browser.close()
 
